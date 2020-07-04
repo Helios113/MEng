@@ -39,4 +39,8 @@ def f(a, b, x):
     return a*np.exp(b*x)
 
 
+def residual():
+    r
+
+
 dataReader('Gauss-Newton/data.raw')
