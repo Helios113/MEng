@@ -4,7 +4,7 @@ from decimal import *
 inputList = []
 outputList = []
 delta = 0.00000001
-consts = [1, 90]
+consts = [90, 1]
 np.seterr(all='ignore')
 # Data reader function
 # takes data from location set @ variable and puts it into memory
@@ -79,7 +79,7 @@ def Residual():
     return np.array(R, dtype='d')
 
 
-dataReader('Gauss-Newton/data.raw')
+dataReader('Gauss-Newton/data_small.raw')
 for i in range(10):
     J = Jacobian()
     R = Residual()
