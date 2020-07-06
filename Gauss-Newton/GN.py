@@ -1,11 +1,10 @@
 import numpy as np
-from decimal import *
 import math
 
 inputList = []
 outputList = []
-delta = 0.00000001
-consts = [90, 90]
+delta = 0.00000000001
+consts = [1, 90]
 np.seterr(all='ignore')
 path = "data"
 # Data reader function
@@ -57,11 +56,14 @@ def f(x, params):
 
 def partial_derivative(x, index):
     n_consts = consts.copy()
-    n_consts[index] = n_consts[index] - (delta/2)
+    n_consts[index] = n_consts[index] - (delta)
     f1 = f(x, n_consts)
-    n_consts[index] = n_consts[index] + delta
+    n_consts[index] = n_consts[index] + (delta)
     f2 = f(x, n_consts)
-    return (f2-f1)/delta
+    n_consts[index] = n_consts[index] + (delta)
+    f3 = f(x, n_consts)
+
+    return (((f2-f1)/delta) + ((f3-f2)/delta))/2
 
 
 def Jacobian():
@@ -84,12 +86,23 @@ def Residual():
 dataReader('Gauss-Newton/'+path+'.raw')
 lastConsts = [0, 0]
 while not all(np.isclose(lastConsts, consts)):
+    print("consts", consts)
     lastConsts = consts.copy()
     J = Jacobian()
     R = Residual()
     dataWriter('Gauss-Newton/'+path+'.out', J, R)
-    c = np.matmul(np.matmul(np.linalg.inv(np.matmul(J.transpose(), J)), J.transpose()), R)
+    # print("R: ", R)
+    # print("J: ", J)
+    cccc = np.matmul(J.transpose(), J)
+    ccc = np.linalg.inv(cccc)
+    cc = np.matmul(ccc, J.transpose())
+    c = np.matmul(cc, R)
     consts = consts + c
+    print("J", J)
+    print("CCcc: ", cccc)
+    print("CCc: ", ccc.shape)
+    print("CC: ", cc.shape)
+    print("C: ", c)
     if math.isnan(consts[0]):
+        print("failed")
         break
-    print(consts)
