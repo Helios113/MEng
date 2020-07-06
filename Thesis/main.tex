@@ -1,0 +1,65 @@
+%Document setup
+\documentclass[12pt,twoside]{report} %pagesize and def font size
+\usepackage{comment}
+\usepackage[utf8]{inputenc}
+\usepackage{graphicx}
+\graphicspath{ {images/} }
+\usepackage[a4paper,width=150mm,top=25mm,bottom=25mm,bindingoffset=6mm]{geometry}
+\usepackage{fancyhdr}
+\pagestyle{fancy}
+\begin{comment}
+\fancyhead{}
+\fancyhead[RO,LE]{Thesis Title}
+\fancyfoot{}
+\fancyfoot[LE,RO]{\thepage}
+\fancyfoot[CO,CE]{Chapter \thechapter}
+\fancyfoot[LO,RE]{Author Name}
+\end{comment}
+
+
+%\pagestyle{headings}
+\usepackage{helvet} %font type
+\renewcommand{\familydefault}{\sfdefault} %font family
+
+
+\title{
+Improved convergence of forward and inverse models\\
+{\large University of Glasgow}\\
+}
+\author{Preslav Aleksandrov}
+\date{01 January 2021}
+
+\begin{document}
+
+
+\maketitle 
+
+\tableofcontents %Table of Contents
+
+\chapter{Abstract} %Chapter definition
+\input{Chapters/Abstract}
+
+\chapter{Dedication}
+\input{Chapters/Dedication}
+
+\chapter{Declaration}
+\input{Chapters/Declaration}
+
+\chapter{Acknowledgements} %adding a * after chapter removes it from the contents
+\input{Chapters/Acknowledgements}
+
+%Bibliography
+
+\appendix %Appendix
+\chapter{Appendix Title}
+\input{Chapters/Appendix}
+
+
+
+
+
+
+
+
+
+\end{document}
