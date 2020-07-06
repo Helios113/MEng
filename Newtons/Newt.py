@@ -9,10 +9,7 @@ Created on Wed May 20 13:51:38 2020
 import matplotlib.pyplot as plt
 from mpl_toolkits.mplot3d import Axes3D
 from scipy.misc import derivative
-import random
 import numpy as np
-from matplotlib import cm
-import itertools
 import matplotlib.patches as mpatches
 
 # array of all solution
@@ -59,7 +56,8 @@ def dxEN(x, c):  # delta x improved newton's
     return -((x-c)*r(x))/(r(x)-((x-c)*r1(x)*r(c)/(r(x)-r(c))))
 
 
-def iterate(x_var, x_tolerance):  # iteration function (Newton's implementation)
+def iterate(x_var, x_tolerance):
+    # iteration function (Newton's implementation)
     while abs(r(x_var)) > x_tolerance:
         r_sol.append(r(x_var))
         x_sol.append(x_var)
@@ -71,10 +69,11 @@ def iterate(x_var, x_tolerance):  # iteration function (Newton's implementation)
     print("Solution is "+str(len(x_sol))+" long")
 
 
-def iterateEN(x_var, c_var, x_tolerance):  # iteration function (Improved Newton's implementation)
+def iterateEN(x_var, c_var, x_tolerance):
+    # iteration function (Improved Newton's implementation)
     r_EN_sol = []
     x_EN_sol = []
-    while np.isclose(r(x_var), 0, x_tolerance, x_tolerance) == False:
+    while not np.isclose(r(x_var), 0, x_tolerance, x_tolerance):
         if len(r_EN_sol) > 3000:
             return 0, 0
         r_EN_sol.append(P(x_var, c_var)*r(x_var))
@@ -90,7 +89,7 @@ def iterateEN(x_var, c_var, x_tolerance):  # iteration function (Improved Newton
 # Plotting interface
 
 
-#fig, ax1 = plt.subplots(constrained_layout=True, dpi=300)
+# fig, ax1 = plt.subplots(constrained_layout=True, dpi=300)
 fig = plt.figure(dpi=300)
 ax = fig.gca(projection='3d')
 fig.tight_layout()
@@ -100,9 +99,11 @@ Z = []
 for i in range(0, 200):  # iteration through different c values
     # xn = random.randrange(-20,20,1) #random selection of an X init value
     xn = 4
-    x, y = iterateEN(xn, i, 1e-4)  # solution vectors (steps taken to reach solution)
+    # solution vectors (steps taken to reach solution)
+    x, y = iterateEN(xn, i, 1e-4)
     if x != 0 and y != 0:
-        # generating Modified function (P*r) plot for a sepecif c (over entire domain)
+        # generating Modified function (P*r)
+        # plot for a sepecif c (over entire domain)
         x_exp = np.linspace(min(x), max(x), 10)
         X.extend(x_exp)
         Y.extend([i]*len(x_exp))
@@ -117,8 +118,8 @@ for i in range(0, 200):  # iteration through different c values
         ax1.plot(x, y,label='c='+str(i)+" len="+str(len(x)),linewidth=0.2)
         ax1.plot(x_exp,r_exp,color = 'black',linewidth=0.2)
         """
-        # Solution compilation
-        # print(x[-1],"@ ",len(x)," iterations @ c=",i,"and initial guess x =", xn)
+    # Solution compilation
+    # print(x[-1],"@ ",len(x)," iterations @ c=",i,"and initial guess x =", xn)
     else:
         print("No convergence for c=", i, "and initial guess x =", xn)
 
@@ -146,10 +147,12 @@ Z1 = (Z1/(max(Z1)-min(Z1)))*(max(Z)-min(Z))
 col1 = "c"
 col2 = "y"
 
-ax.plot_trisurf(X, Y, Z, linewidth=0.2, antialiased=True, alpha=0.5, color=col1)
-ax.plot_trisurf(X1, Y1, Z1, linewidth=0.2, antialiased=True, alpha=0.5, color=col2)
-#ax.contour3D(X, Y, Z, 50, cmap='binary')
-#ax.tricontourf(X, Y, Z,alpha=0.5)
+ax.plot_trisurf(X, Y, Z,
+                linewidth=0.2, antialiased=True, alpha=0.5, color=col1)
+ax.plot_trisurf(X1, Y1, Z1,
+                linewidth=0.2, antialiased=True, alpha=0.5, color=col2)
+# ax.contour3D(X, Y, Z, 50, cmap='binary')
+# ax.tricontourf(X, Y, Z,alpha=0.5)
 ax.set_xlabel(r'$x_n$')
 ax.set_ylabel(r'$c$')
 ax.set_zlabel(r'$P(x_n,c)*r(x_n)$')
