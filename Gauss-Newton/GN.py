@@ -1,11 +1,13 @@
 import numpy as np
 from decimal import *
+import math
 
 inputList = []
 outputList = []
 delta = 0.00000001
-consts = [90, 1]
+consts = [90, 90]
 np.seterr(all='ignore')
+path = "data"
 # Data reader function
 # takes data from location set @ variable and puts it into memory
 
@@ -79,11 +81,15 @@ def Residual():
     return np.array(R, dtype='d')
 
 
-dataReader('Gauss-Newton/data_small.raw')
-for i in range(10):
+dataReader('Gauss-Newton/'+path+'.raw')
+lastConsts = [0, 0]
+while not all(np.isclose(lastConsts, consts)):
+    lastConsts = consts.copy()
     J = Jacobian()
     R = Residual()
-    dataWriter('Gauss-Newton/output_small.raw', J, R)
+    dataWriter('Gauss-Newton/'+path+'.out', J, R)
     c = np.matmul(np.matmul(np.linalg.inv(np.matmul(J.transpose(), J)), J.transpose()), R)
     consts = consts + c
+    if math.isnan(consts[0]):
+        break
     print(consts)
