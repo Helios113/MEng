@@ -3,15 +3,14 @@ import math
 
 inputList = []
 outputList = []
-delta = 0.00000000001
-consts = [1, 90]
+delta = 0.00000000001  # finite step size
+consts = [1, 90]  # initial guesses
 np.seterr(all='ignore')
-path = "data"
-# Data reader function
-# takes data from location set @ variable and puts it into memory
+name = "data"  # data set name, imput files must have *.raw file type, outputs will be saved with *.out file type
 
 
 def dataReader(location):
+    # load data from name file
     with open(location, 'r') as reader:
         s = reader.read()
         a = ""
@@ -31,30 +30,36 @@ def dataReader(location):
     reader.close()
 
 
-def dataWriter(location, A, B):
+def dataWriter(location, t, A):
+    # export data from name file
+    # only shows last iteration of J and R matrix
     with open(location, 'w+') as writer:
-        writer.write("J\n")
-        for i in A:
-            writer.write(np.array_str(i)[1:-1] + '\n')
-        writer.write("R\n")
-        for i in B:
-            writer.write(str(i) + '\n')
-    writer.close()
+        if t:
+            writer.write("J\n")
+            for i in A[0]:
+                writer.write(np.array_str(i)[1:-1] + '\n')
+            writer.write("R\n")
+            for i in A[1]:
+                writer.write(str(i) + '\n')
+        else:
+            writer.write("parameters: ")
+            writer.write(np.array_str(A)[1:-1] + '\n')
 
-# returns the square sum of a list
+    writer.close()
 
 
 def sSquares(list):
-    return sum([n**2 for n in list])
-
-# returns the oputput of the specified function
+    # calculate sum of square error
+    return sum([n**2 for n in list])/2
 
 
 def f(x, params):
+    # Assumed model equation
     return params[0]*np.exp(params[1]*x)
 
 
 def partial_derivative(x, index):
+    # partial derivative using Finite differences method
     n_consts = consts.copy()
     n_consts[index] = n_consts[index] - (delta)
     f1 = f(x, n_consts)
@@ -62,11 +67,11 @@ def partial_derivative(x, index):
     f2 = f(x, n_consts)
     n_consts[index] = n_consts[index] + (delta)
     f3 = f(x, n_consts)
-
     return (((f2-f1)/delta) + ((f3-f2)/delta))/2
 
 
 def Jacobian():
+    # assembley of Jacobian matrix
     J = []
     for i in inputList:
         j1 = []
@@ -77,32 +82,30 @@ def Jacobian():
 
 
 def Residual():
+    # calculate the residual
     R = []
     for i in np.arange(len(outputList)):
         R.append(outputList[i]-f(inputList[i], consts))
     return np.array(R, dtype='d')
 
 
-dataReader('Gauss-Newton/'+path+'.raw')
-lastConsts = [0, 0]
+dataReader('Gauss-Newton/'+name+'.raw')
+lastConsts = [0, 0]  # used for comparing convergance
+fin = True
 while not all(np.isclose(lastConsts, consts)):
-    print("consts", consts)
     lastConsts = consts.copy()
     J = Jacobian()
     R = Residual()
-    dataWriter('Gauss-Newton/'+path+'.out', J, R)
-    # print("R: ", R)
-    # print("J: ", J)
-    cccc = np.matmul(J.transpose(), J)
-    ccc = np.linalg.inv(cccc)
-    cc = np.matmul(ccc, J.transpose())
-    c = np.matmul(cc, R)
-    consts = consts + c
-    print("J", J)
-    print("CCcc: ", cccc)
-    print("CCc: ", ccc.shape)
-    print("CC: ", cc.shape)
-    print("C: ", c)
+    dataWriter('Gauss-Newton/'+name+'.out', True, [J, R])
+    cccc = np.matmul(J.transpose(), J)  # J^t x J
+    ccc = np.linalg.inv(cccc)  # (J^t x J) ^ -1
+    cc = np.matmul(ccc, J.transpose())  # ((J^t x J) ^ -1) x J
+    dc = np.matmul(cc, R)  # ((J^t x J) ^ -1) x J x R
+    consts = consts + dc
     if math.isnan(consts[0]):
         print("failed")
+        fin = False
         break
+if fin:
+    dataWriter('Gauss-Newton/'+name+'.out', False, consts)
+    print(consts)
