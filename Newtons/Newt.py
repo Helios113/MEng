@@ -118,7 +118,7 @@ for i in range(0, 200):  # iteration through different c values
         ax1.plot(x_exp,r_exp,color = 'black',linewidth=0.2)
         """
         # Solution compilation
-        #print(x[-1],"@ ",len(x)," iterations @ c=",i,"and initial guess x =", xn)
+        # print(x[-1],"@ ",len(x)," iterations @ c=",i,"and initial guess x =", xn)
     else:
         print("No convergence for c=", i, "and initial guess x =", xn)
 
@@ -126,9 +126,9 @@ for i in range(0, 200):  # iteration through different c values
 # 3D plotting
 
 
-#X,Y = np.meshgrid(X,Y)
+# X,Y = np.meshgrid(X,Y)
 # print(Y)5
-#Z = [Z]*len(X[0])
+# Z = [Z]*len(X[0])
 # generating original shape
 X1 = np.linspace(min(X), max(X), 20)
 Z1 = []
