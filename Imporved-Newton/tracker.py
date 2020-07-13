@@ -1,3 +1,3 @@
-from improved-newton.py import solve
+from improved-newton import solve
 
 solve("x+2", {'x': x})
