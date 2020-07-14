@@ -1,6 +1,17 @@
 from improved import solve
+import csv
+expression = "np.exp(x)-500"
+ans = []
+for c in range(500):
+    for x in range(500):
+        parameters = {'x': x, 'c': c, 'step': 0.00000001}
+        response = solve(expression, parameters)
+        if response is False:
+            continue
+        else:
+            ans.append([len(response), x, c])
 
-parameters = {'x': 1, 'c': -1, 'step': 0.0001}
-expression = "x+1"
-
-print(solve(expression, parameters))
+with open("ans.csv", "w") as file:
+    writer = csv.writer(file)
+    for i in ans:
+        writer.writerow(i)
