@@ -1,5 +1,6 @@
 import numpy as np
 import keyboard
+from numba import jit
 
 
 globals = {'__builtins__': None, 'np': np}
@@ -10,7 +11,7 @@ step = 0  # non dynamic step for now
 c = 0
 rc = 0
 
-iterations_until_convergence = 8000
+iterations_until_convergence = 10
 
 
 def rf(x):  # r function
@@ -42,16 +43,22 @@ def dEN():
 dY = []
 
 
+@jit
 def iter():
     global xn
     global dY
     xn1 = dEN()
     if xn1 == c:
         return False
+    if rf(xn) == 0:
+        return dY
     dY.append(abs(rf(xn1)/rf(xn)))
     if len(dY) > iterations_until_convergence:
-        return False
-    if np.isclose(rf(xn1), 0) == False:
+        res = all(i < j for i, j in zip(dY[-9:], dY[-8:]))
+        if res is True:
+            return False
+
+    if np.isclose(rf(xn1), 0) is False:
         xn = xn1
         return iter()
     else:
@@ -75,4 +82,6 @@ def solve(expr, param):
     rc = rf(c)
     if xn == c:
         return False
+    if rc == 0:
+        return []
     return iter()
