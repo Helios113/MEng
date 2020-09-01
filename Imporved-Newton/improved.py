@@ -1,89 +1,59 @@
 import numpy as np
-import keyboard
-from numba import jit
+from typing import List
+
+class IterationSteps:
+    min = -1
+    max = -1
+    size = -1
+    def __init__(self, steps : List[float]):
+        self.setps = steps
+        self.min = min(self.setps)
+        self.max = max(self.setps)
+        self.size = len(self.setps)
+
+class ResultObject:
+    def generateCurve(self, points):
+        return self.func(np.linspace(self.list.min, self.list.max, points))
+
+    def __init__(self, result : IterationSteps, func, converged : bool, function_calls : int):
+        if callable(func) == False:
+            raise ValueError("func has to be a vallable function")
+        self.list = result
+        self.steps = self.list.len
+        self.func = func
+        self.curve = self.generateCurve(100)
+        self.converged = converged
+        self.function_calls = function_calls  
 
 
+def f(x):
+    return x/2
+
+a = [1,2,3]
+
+i = IterationSteps(a)
+r = ResultObject(i, f,True,3)
+print(r.curve)
 
 
-
-expression = ""
-parameters = {}
-xn = 0
-step = 0  # non dynamic step for now
-c = 0
-rc = 0
-
-iterations_until_convergence = 10
-
-
-def rf(x):  # r function
-    global expression
-    global globals
-    global parameters
-    parameters['x'] = x
-    return eval(expression, globals, parameters)
-
-
-def dr(x):
-    return (rf(x+step)-rf(x-step))/(step*2)
-
-
-def dEN():
-    global c
-    global xn
-    global rc
-    r = rf(xn)
-    r1 = dr(xn)
-    if r == rc:
-        return False
-    o = (xn-c)*r
-    p1 = rc/(r-rc)
-    p = r - ((xn-c)*r1*p1)
-    return xn - (o/p)
-
-
-dY = []
-
-
-@jit
-def iter():
-    global xn
-    global dY
-    xn1 = dEN()
-    if xn1 == c:
-        return False
-    if rf(xn) == 0:
-        return dY
-    dY.append(abs(rf(xn1)/rf(xn)))
-    if len(dY) > iterations_until_convergence:
-        res = all(i < j for i, j in zip(dY[-9:], dY[-8:]))
-        if res is True:
-            return False
-
-    if np.isclose(rf(xn1), 0) is False:
-        xn = xn1
-        return iter()
-    else:
-        return dY
-
-
-def solve(expr, param):
-    global dY
-    global parameters
-    global expression
-    global xn
-    global step
-    global c
-    global rc
-    dY = []
-    expression = expr
-    parameters = param
-    xn = param['x']
-    step = param['step']
-    c = parameters['c']
-    rc = rf(c)
-    if xn == c:
-        return False
-    if rc == 0:
-        return []
-    return iter()
+def extended(func, x0, c, fprime = None):
+    print("TODO")
+    """
+    Parameters
+    ----------
+    func : callable
+        The function whose zero is wanted. It must be a function of a
+        single variable of the form ``f(x,a,b,c...)``, where ``a,b,c...``
+        are extra arguments that can be passed in the `args` parameter.
+    x0 : float, sequence, or ndarray
+        An initial estimate of the zero that should be somewhere near the
+        actual zero. If not scalar, then `func` must be vectorized and return
+        a sequence or array of the same shape as its first argument.
+    fprime : callable, optional
+        The derivative of the function when available and convenient. If it
+        is None (default), then the secant method is used.
+        
+    """
+(No subject)
+Preslav Aleksandrov (student)
+Tue 01/09/2020 15:33
