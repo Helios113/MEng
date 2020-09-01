@@ -12,19 +12,18 @@ class IterationSteps:
         self.size = len(self.setps)
 
 class ResultObject:
-    def generateCurve(self, points):
-        return self.func(np.linspace(self.list.min, self.list.max, points))
-
-    def __init__(self, result : IterationSteps, func, converged : bool, function_calls : int):
+    def __init__ (self, result : IterationSteps, func, converged : bool, function_calls : int):
         if callable(func) == False:
             raise ValueError("func has to be a vallable function")
         self.list = result
-        self.steps = self.list.len
+        self.steps = self.list.size
         self.func = func
-        self.curve = self.generateCurve(100)
+        self.curve = self.generateCurve(100) #Default number of points for original funnction
         self.converged = converged
         self.function_calls = function_calls  
-
+        
+    def generateCurve (self, points):
+        return self.func(np.linspace(self.list.min, self.list.max, points))
 
 def f(x):
     return x/2
@@ -54,6 +53,3 @@ def extended(func, x0, c, fprime = None):
         is None (default), then the secant method is used.
         
     """
-(No subject)
-Preslav Aleksandrov (student)
-Tue 01/09/2020 15:33
