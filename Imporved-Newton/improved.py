@@ -3,7 +3,9 @@ import keyboard
 from numba import jit
 
 
-globals = {'__builtins__': None, 'np': np}
+
+
+
 expression = ""
 parameters = {}
 xn = 0
