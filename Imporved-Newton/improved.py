@@ -1,5 +1,6 @@
 import numpy as np
 from extendedClasses import InputSeed, ResultObject, IterationSteps
+import plotting as plt
 delta = 1e-4
 
 
@@ -98,17 +99,21 @@ def extended(ent : InputSeed):
         r = ResultObject(s,f,converged,result)
         return r
         
-
 def eq(xc, f, fp, fc, sub): # here to keep code dry
     return xc - ((sub*f(xc)) / (f(xc) - (sub*fp(xc,f) * (fc / (f(xc)-fc)))))
 
-print(secant(5,testFunction))
 
-i = InputSeed(5,3,testFunction,secant,None,0.01, 0,max_iter=50,mode = 0)
+i = InputSeed(0,3,testFunction,secant,None,0.01, 0,max_iter=50,mode = 0)
+
+
 r = extended(i)
 print(r.resultFlag)
 print(r.list.setps)
-r.generateCurve(10)
+r.generateCurve(50)
 print(r.curve)
 r.generatePath()
 print(r.path)
+
+plt.addLines(r.list.setps, r.path)
+plt.addLines(np.linspace(r.list.min,r.list.max,len(r.curve)), r.curve)
+plt.show()
