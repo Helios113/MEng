@@ -8,12 +8,12 @@ def testFunction(x): # function name where we add equation
     return np.exp(x)-500
 
 
-def secant(a, func): # needs to know our test function
+
+
+
+def secant(a, func):
     global delta
     return (func(a+delta) - func(a-delta)) / (2*delta)
-
-
-
 
 """
 the function should work for only scalar values and not have list function built in
