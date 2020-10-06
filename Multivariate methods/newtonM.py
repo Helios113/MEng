@@ -12,14 +12,14 @@ def f2(x):
 
 
 L = [f1,f2]
-a = np.array([1,1], float)
+a = np.array([1,2], float)
 J = jb.Jacobian(L,a)
 
 def Newton(L, x):
     #iteration mode only 50 iterations
     #print(jb.Jacobian(L,x))
     
-    print(x)
+    #print(x)
     for i in range(50):
         b = np.linalg.inv(jb.Jacobian(L,x)).dot(f(L,x))
         x -= b

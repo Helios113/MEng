@@ -1,3 +1,0 @@
-function,bracket,x0,x1,bisect_iterations,bisect_cals,brentq_iterations,brentq_cals,brenth_iterations,brenth_cals,ridder_iterations,ridder_cals,toms748_iterations,toms748_cals,newton_iterations,newton_cals,exnewton_iterations,exnewton_cals,secant_iterations,secant_cals,halley_iterations,halley_cals
-x^3-1,"[0, 2]",0.2,2,1,3,9,10,9,10,1,4,5,11,11,22,6,13,11,12,7,22
-x^3-1,"[0, 2]",0.2,2,1,3,9,10,9,10,1,4,5,11,11,22,6,13,11,12,7,22

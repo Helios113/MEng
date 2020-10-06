@@ -17,8 +17,7 @@ l = """function,x0, x1,
   halley_cals  """
 
 
-create_data_table = """
-CREATE TABLE IF NOT EXISTS data (
+create_data_table = """CREATE TABLE IF NOT EXISTS data (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   function TEXT NOT NULL,
   x0 NUMERIC,
@@ -31,28 +30,7 @@ CREATE TABLE IF NOT EXISTS data (
   secant_cals INTEGER,
   halley_iterations INTEGER,
   halley_cals INTEGER
-);
-"""
-
-
-
-
-
-"""
-Variables to be used
-"""
-dataPath = r'results'
-fileName = "/info.db"
-
-"""
-function and its first and second derivative
-"""
-def f(x):
-    return (x**3 - 1)  # only one real root at x = 1
-def fprime(x):
-    return (3*x**2)
-def fprime2(x):
-    return (6*x)
+);"""
 
 
 
@@ -64,7 +42,7 @@ def create_connection(path):
     connection = None
     try:
         connection = sqlite3.connect(path)
-        print("Connection to SQLite DB successful")
+        #print("Connection to SQLite DB successful")
     except Error as e:
         print(f"The error '{e}' occurred")
 
@@ -75,7 +53,7 @@ def execute_query(connection, query):
     try:
         cursor.execute(query)
         connection.commit()
-        print("Query executed successfully")
+        #print("Query executed successfully")
         return cursor.fetchall()
     except Error as e:
         print(f"The error '{e}' occurred")
@@ -152,31 +130,7 @@ def writeToDB(dataPath, fileName, data):
         if execute_query(connection, msg) == []:
             s = ","
             s = s.join([str(elem) for elem in i])
-            print(s)
+            #print(s)
             msg = f"INSERT INTO data ({l}) VALUES({s})"
-            print(msg)
+            #print(msg)
             execute_query(connection, msg)
-
-
-
-fList = [f, fprime, fprime2]
-testData = [test(-600,501, "x^3-1",fList)]
-
-print(testData)
-writeToDB(dataPath,fileName,testData)
-
-
-
-
-
-connection = create_connection(dataPath+fileName)
-
-
-"""
-fList = [f, fprime, fprime2]
-testData = [test([0,2],0.2,2, "x^3-1",fList)]
-
-writeToCSV(dataPath,fileName, testData)
-"""
-
-
