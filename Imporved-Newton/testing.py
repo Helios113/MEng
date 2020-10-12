@@ -56,14 +56,14 @@ for i in list:
         hs = np.hstack((hs,ans)) if hs is not None else ans
     vs = np.vstack((vs,hs)) if vs is not None else hs
 
-#print('####### Jacobian ########')
-#print(vs)
+print('####### Jacobian ########')
+print(vs)
 print('####### Jacobian inverse ########')
 ji = pinv(vs)
 print(ji)
 
-print('####### X ########')
-print(x)
+#print('####### X ########')
+#print(x)
 
 print('####### Jacobian inverse 3D ########')
 #the right assembley
@@ -79,4 +79,4 @@ p = hs.T.copy()
 print(p)
 print('####### New X ########')
 ans = np.einsum(jii,[0,1,2],p,[2,1]).reshape((2,1))
-print(x-ans)
+print(ans)
