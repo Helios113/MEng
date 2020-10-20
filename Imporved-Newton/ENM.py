@@ -1,7 +1,7 @@
 import numpy as np
 from numpy.linalg import pinv
 from functools import partial
-delta = 1e-4
+delta = 1e-6
 import matplotlib.cm as cm
 import matplotlib.pyplot as plt
 
@@ -65,13 +65,35 @@ class ENM:
     # TODO
     # convergance criteria
     def solve(self):
+        global delta
         steps = []
-        for i in range(10):
+        cnt = 0
+        while (True):
+            if cnt > 100:
+                break
+            if len(steps) > 1:
+                if np.linalg.norm(steps[-1]-steps[-2]) < delta:
+                    break
             #  print(self.__x)
             steps.append(self.__x.flatten())
             self.__x = self.__x - np.matmul(self.p(), self.q())
+            cnt += 1
+        self.__x = self.__x - np.matmul(self.p(), self.q())
         #  print(self.x)
-        return self.__x, steps
+        if self.check_root(self.__x):
+            return np.around(self.__x,5), steps
+        return None, steps
+    
+    def check_root(self, x):
+        ans = 0
+        global delta
+        for i in self.f1:
+            #print(np.linalg.norm(i(x)))
+            ans += np.linalg.norm(i(x))
+        #print(ans)
+        if ans <= delta:
+            return True
+        return False
 
     def mfunc(self, nos):
         if self.roots is None:
@@ -82,36 +104,26 @@ class ENM:
         for i in vals:
             ans = np.linspace(np.min(i), np.max(i), nos).flatten()
             vs = np.vstack((vs, ans)) if vs is not None else ans
-        X, Y = np.asanyarray(np.meshgrid(*vs, sparse=False))
         
-        xz = np.empty((len(X), len(Y)))
-        for ii,i in enumerate(X):
-            for jj,j in enumerate(i):
-                xz[ii, jj] = self.f1[0](np.array([X[ii,jj],Y[ii,jj]]).reshape(-1, 1))
-        print(X.shape)
-        return X, Y, xz
+        X, Y = np.asanyarray(np.meshgrid(*vs, sparse=False))
+        pcg =[]
+        for i in self.f1:
+            pcg.append((X, Y, i([X, Y])))
+        return pcg
 
 
-def f1(x):
-    return np.exp(x[0])-x[1]
 
 
-def f2(x):
+"""fig, ax = plt.subplots()
+print(X, Y, Z)
+CS = ax.contour(X, Y, Z, levels = 10)
 
-    return x[0]*x[1] - np.exp(x[0])
-
-
-f = [f1, f2]
-
-n = np.arange(8).reshape((2, 4))
-#  x = np.zeros((2,1))
-#  c = np.zeros((2,1))
-x = np.array([20.0, 25.0]).reshape((2, 1))
-c = np.array([1, 1]).reshape((2, 1))
-
-t = ENM(x, c, f)
-X, Y, Z = t.mfunc(100)
-
-fig, ax = plt.subplots()
-CS = ax.contour(X, Y, Z)
 plt.show()
+
+
+fig = plt.figure()
+ax = fig.gca(projection='3d')
+surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm,
+                       linewidth=0, antialiased=False)
+plt.show()
+"""
