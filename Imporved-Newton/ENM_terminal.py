@@ -13,21 +13,21 @@ if __name__ == '__main__':
     startTime = datetime.now()
     FILE_PATH = 'results/Ans '
     pool = mp.Pool(processes=8)
-    c = np.array([2, 5]).reshape((2, 1))
 
-    n = 1000
-    m = 1000
+    n = 10j
+    m = 10j
     start = -20
     stop = 20
     f_index = 5
 
-    ans = np.zeros((m, n, 3))
+    #ans = np.zeros((m, n, 3))
     ansSet = {}
-    x = 
-    c = 
-    t = pool.map(ENM.ENM, x, c)
+    x = np.mgrid[start:stop:n, start:stop:m].reshape(2, -1).T
+    c = np.repeat(np.array([2, 5]), -(n*m).real, axis=0).reshape(2, -1).T
+    list = [a for a in zip(x.tolist(), c.tolist())]
+    t = pool.map(ENM.ENM, list)
 
-            """if t.roots is not None:
+    """if t.roots is not None:
                 if tuple(t.roots.flatten().tolist()) not in ansSet:
                     #  print("yay")
                     ansSet[tuple(t.roots.flatten().tolist())] = np.array(

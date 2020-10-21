@@ -14,9 +14,9 @@ def f2(x):
 
 class ENM:
 
-    def __init__(self, x, c):
-        self.__x = x
-        self.c = c
+    def __init__(self, x):
+        self.__x = np.array(x[0])
+        self.c = np.array(x[1])
         self.f = self.covert_to_partial_function([f1, f2])
         self.f1 = [f1, f2]
         self.roots, self.steps = self.solve()
