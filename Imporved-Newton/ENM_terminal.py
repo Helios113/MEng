@@ -19,8 +19,8 @@ def f2(x):
 f = [f1, f2]
 c = np.array([2, 5]).reshape((2, 1))
 
-n = 10
-m = 10
+n = 1000
+m = 1000
 start = -20
 stop = 20
 f_index = 5
@@ -44,6 +44,7 @@ for i, ii in enumerate(np.linspace(start, stop, n)):
                 #  print(ansSet[tuple(t.roots.flatten().tolist())])
             ans[j, i, :] = ansSet[tuple(t.roots.flatten().tolist())]
             #
+print(datetime.now()-startTime)
 name = (f"F-{f_index} X ({start}, {stop}, {n}x{m})" +
         f" C ({c.flatten().tolist()}).npy")
 with open(FILE_PATH + name, "w+") as file:

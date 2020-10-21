@@ -2,8 +2,7 @@ import numpy as np
 from numpy.linalg import pinv
 from functools import partial
 delta = 1e-6
-import matplotlib.cm as cm
-import matplotlib.pyplot as plt
+
 
 class ENM:
 
@@ -25,7 +24,7 @@ class ENM:
         a = x-self.c
         b = g(x)-g(self.c)
         d = g(x)
-        #print((d/b)*a)
+        #  print((d/b)*a)
         return (d/b)*a
 
     def getPartial(self, j, i):
@@ -81,16 +80,16 @@ class ENM:
         self.__x = self.__x - np.matmul(self.p(), self.q())
         #  print(self.x)
         if self.check_root(self.__x):
-            return np.around(self.__x,5), steps
+            return np.around(self.__x, 5), steps
         return None, steps
-    
+
     def check_root(self, x):
         ans = 0
         global delta
         for i in self.f1:
-            #print(np.linalg.norm(i(x)))
+            #  print(np.linalg.norm(i(x)))
             ans += np.linalg.norm(i(x))
-        #print(ans)
+        #  print(ans)
         if ans <= delta:
             return True
         return False
@@ -104,26 +103,9 @@ class ENM:
         for i in vals:
             ans = np.linspace(np.min(i), np.max(i), nos).flatten()
             vs = np.vstack((vs, ans)) if vs is not None else ans
-        
+
         X, Y = np.asanyarray(np.meshgrid(*vs, sparse=False))
-        pcg =[]
+        pcg = []
         for i in self.f1:
             pcg.append((X, Y, i([X, Y])))
         return pcg
-
-
-
-
-"""fig, ax = plt.subplots()
-print(X, Y, Z)
-CS = ax.contour(X, Y, Z, levels = 10)
-
-plt.show()
-
-
-fig = plt.figure()
-ax = fig.gca(projection='3d')
-surf = ax.plot_surface(X, Y, Z, cmap=cm.coolwarm,
-                       linewidth=0, antialiased=False)
-plt.show()
-"""
