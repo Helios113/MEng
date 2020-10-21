@@ -5,18 +5,21 @@ delta = 1e-6
 
 
 def f1(x):
+    #  x_{1}^{3}-3x_1x_2^2-1\\
     return x[0]**3-3*x[0]*x[1]**2-1
 
 
 def f2(x):
+    #  3x_1^2x_2-x_2^3\\
     return 3*x[0]**2*x[1]-x[1]**3
 
 
 class ENM:
 
     def __init__(self, x):
-        self.__x = np.array(x[0])
-        self.c = np.array(x[1])
+        self.__x = np.array(x[0]).reshape((2, 1))
+        self.start = x[0]
+        self.c = np.array(x[1]).reshape((2, 1))
         self.f = self.covert_to_partial_function([f1, f2])
         self.f1 = [f1, f2]
         self.roots, self.steps = self.solve()
@@ -79,7 +82,7 @@ class ENM:
             if cnt > 100:
                 break
             if len(steps) > 1:
-                if np.linalg.norm(steps[-1]-steps[-2]) < delta:
+                if np.linalg.norm(steps[-1]-steps[-2]) < delta/10**6:
                     break
             #  print(self.__x)
             steps.append(self.__x.flatten())
@@ -98,7 +101,7 @@ class ENM:
             #  print(np.linalg.norm(i(x)))
             ans += np.linalg.norm(i(x))
         #  print(ans)
-        if ans <= delta:
+        if ans <= delta/10**6:
             return True
         return False
 

@@ -2,7 +2,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-c = np.array([2, 5]).reshape((2, 1))
+c = [2, 5]
 n = 100
 m = 100
 start = -20
@@ -16,14 +16,15 @@ outer_colors = colors(np.arange(4)*4)
 def Transform(a):
     global outer_colors
     alpha = int(a[1])
+    
     n = np.array(outer_colors[int(a[0])])
-    #  n = np.array(outer_colors[3])
+    #n = np.array(outer_colors[3])
     n[..., -1] = alpha
     return n
 
 
 FILE_PATH = (f'results/Ans F-{f_index} X ({start}, {stop}, {n}x{m})' +
-             f' C ({c.flatten().tolist()}).npy')
+             f' C ({c}).npy')
 with open(FILE_PATH, "r") as file:
     ans = np.load(FILE_PATH, allow_pickle=False)
 #  print(ans[:,:])
