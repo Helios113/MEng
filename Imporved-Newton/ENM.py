@@ -18,7 +18,7 @@ class ENM:
         self.__x = x
         self.c = c
         self.f = self.covert_to_partial_function([f1, f2])
-        self.f1 = [f1,f2]
+        self.f1 = [f1, f2]
         self.roots, self.steps = self.solve()
         #  print(self.q())
 
