@@ -4,13 +4,21 @@ from functools import partial
 delta = 1e-6
 
 
+def f1(x):
+    return x[0]**3-3*x[0]*x[1]**2-1
+
+
+def f2(x):
+    return 3*x[0]**2*x[1]-x[1]**3
+
+
 class ENM:
 
-    def __init__(self, x, c, f):
+    def __init__(self, x, c):
         self.__x = x
         self.c = c
-        self.f = self.covert_to_partial_function(f)
-        self.f1 = f
+        self.f = self.covert_to_partial_function([f1, f2])
+        self.f1 = [f1,f2]
         self.roots, self.steps = self.solve()
         #  print(self.q())
 
