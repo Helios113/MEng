@@ -19,8 +19,8 @@ def f2(x):
 f = [f1, f2]
 c = np.array([2, 5]).reshape((2, 1))
 
-n = 1000
-m = 1000
+n = 100
+m = 100
 start = -20
 stop = 20
 f_index = 5
