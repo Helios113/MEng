@@ -3,8 +3,8 @@ import matplotlib.pyplot as plt
 
 
 c = np.array([2, 5]).reshape((2, 1))
-n = 10
-m = 10
+n = 100
+m = 100
 start = -20
 stop = 20
 f_index = 5
