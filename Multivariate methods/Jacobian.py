@@ -1,26 +1,26 @@
 import numpy as np
-from typing import List
-delta = 1e-4
+delta = 1e-6
+
 
 def Jacobian(L, x):
-    ans = np.empty([len(x),len(L)])
-    for b in range(len(L)):
-        ans[:,b] = JacobianColumn(L[b],x)
-    return ans
+    vs = None
+    for i in range(len(L)):
+        hs = None
+        for j in range(len(x)):
+            ans = getPartial(L[i], j, x)
+            hs = np.hstack((hs, ans)) if hs is not None else ans
+        vs = np.vstack((vs, hs)) if vs is not None else hs
+    return vs
 
-def JacobianColumn(func, x : List[float]):
-    size = len(x)
-    ans = np.empty([size])
-    for i in range(size):
-        ans[i] = getPartial(func, i , x)
-    return ans
 
 def getPartial(func, i, x):
     global delta
-    a = [j for j in x]
+    a = x.copy()
+    b = x.copy()
+
     a[i] -= delta
-    b = [j for j in x]
     b[i] += delta
+
     fa = func(a)
     fb = func(b)
     return (fb-fa)/(2*delta)

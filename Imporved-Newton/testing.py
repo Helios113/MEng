@@ -1,15 +1,116 @@
 import numpy as np
-import cupy as cp
-import time
+from numpy.linalg import pinv
+from functools import partial
+delta = 1e-6
 
-### Numpy and CPU
-s = time.time()
-x_cpu = np.ones((1000, 1000, 300))
-e = time.time()
-print(e - s)
-### CuPy and GPU
-s = time.time()
-x_gpu = cp.ones((1000, 1000, 1))
-cp.cuda.Stream.null.synchronize()
-e = time.time()
-print(e - s)
+
+def f1(x):
+    #  x_{1}^{3}-3x_1x_2^2-1\\
+    return x[0]**3-3*x[0]*x[1]**2-1
+
+
+def f2(x):
+    #  3x_1^2x_2-x_2^3\\
+    return 3*x[0]**2*x[1]-x[1]**3
+
+
+class ENM1:
+
+    def __init__(self, x):
+        self.__x = np.array(x[0]).reshape((2, 1))
+        self.c = np.array(x[1]).reshape((2, 1))
+        self.f = [np.vectorize(f1), np.vectorize(f2)]
+        self.f1 = [f1, f2]
+        self.roots, self.steps = self.solve()
+        #  print(self.q())
+
+    def covert_to_partial_function(self, f):
+        list = []
+        for i in f:
+            list.append(partial(self.P, i))
+        return list
+
+    def P(self, g, x):
+        a = x-self.c
+        b = g(x)-g(self.c)
+        d = g(x)
+        #  print((d/b)*a)
+        return (d/b)*a
+
+    def getPartial(self):
+        global delta
+        a = self.__x.copy()-delta
+        b = self.__x.copy()+delta
+        func(a,x)
+        fa = func(a)
+        fb = func(b)
+        return (fb-fa)/(2*delta)
+    def func(x,d):
+        x = x.flatten()
+        hs = 
+        for i in len(x):
+            x[i]+=d
+
+
+    #  Assembiling Jacobian inverse (pij)
+    def p(self):
+        ans = self.getPartial()
+        return pinv(ans)
+
+    #  Assembiling full F vector (qj)
+    def q(self):
+        vs = None
+        for i in range(len(self.f)):
+            ans = self.f[i](self.__x)
+            vs = np.vstack((vs, ans)) if vs is not None else ans
+        return vs
+
+    #  Iterate method
+    # TODO
+    # convergance criteria
+    def solve(self):
+        global delta
+        steps = []
+        cnt = 0
+        while (True):
+            if cnt > 100:
+                break
+            if len(steps) > 1:
+                if np.linalg.norm(steps[-1]-steps[-2]) < delta/10**6:
+                    break
+            #  print(self.__x)
+            steps.append(self.__x.flatten())
+            self.__x = self.__x - np.matmul(self.p(), self.q())
+            cnt += 1
+        self.__x = self.__x - np.matmul(self.p(), self.q())
+        #  print(self.x)
+        if self.check_root(self.__x):
+            return np.around(self.__x, 5), steps
+        return None, steps
+
+    def check_root(self, x):
+        ans = 0
+        global delta
+        for i in self.f1:
+            #  print(np.linalg.norm(i(x)))
+            ans += np.linalg.norm(i(x))
+        #  print(ans)
+        if ans <= delta/10**6:
+            return True
+        return False
+
+    def mfunc(self, nos):
+        if self.roots is None:
+            raise ValueError("No solution to show func")
+            return
+        vals = np.asanyarray(self.steps).T
+        vs = None
+        for i in vals:
+            ans = np.linspace(np.min(i), np.max(i), nos).flatten()
+            vs = np.vstack((vs, ans)) if vs is not None else ans
+
+        X, Y = np.asanyarray(np.meshgrid(*vs, sparse=False))
+        pcg = []
+        for i in self.f1:
+            pcg.append((X, Y, i([X, Y])))
+        return pcg

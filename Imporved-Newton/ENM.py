@@ -6,11 +6,16 @@ delta = 1e-6
 
 def f1(x):
     #  x_{1}^{3}-3x_1x_2^2-1\\
+    #1return np.exp(x[0])-x[1]
+    #2return x[0]**2-x[1]**2-9
     return x[0]**3-3*x[0]*x[1]**2-1
+    
 
 
 def f2(x):
     #  3x_1^2x_2-x_2^3\\
+    #1return x[0]*x[1]-np.exp(x[0])
+    #2return 2*x[0]*x[1]
     return 3*x[0]**2*x[1]-x[1]**3
 
 
@@ -82,7 +87,7 @@ class ENM:
             if cnt > 100:
                 break
             if len(steps) > 1:
-                if np.linalg.norm(steps[-1]-steps[-2]) < delta/10**6:
+                if np.linalg.norm(steps[-1]-steps[-2]) < delta:
                     break
             #  print(self.__x)
             steps.append(self.__x.flatten())
@@ -95,13 +100,17 @@ class ENM:
         return None, steps
 
     def check_root(self, x):
+        #ans = np.array([1, 2.718])
         ans = 0
         global delta
         for i in self.f1:
-            #  print(np.linalg.norm(i(x)))
+            #print(np.linalg.norm(i(x)))
             ans += np.linalg.norm(i(x))
         #  print(ans)
-        if ans <= delta/10**6:
+        #if np.linalg.norm(ans-np.round(x,3).flatten()) <= delta:
+        #    return True
+        #print("diff", np.linalg.norm(ans-np.round(x,3).flatten()))
+        if ans <= delta:
             return True
         return False
 
