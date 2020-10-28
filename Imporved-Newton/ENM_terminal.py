@@ -9,11 +9,11 @@ if __name__ == '__main__':
     startTime = datetime.now()
     pool = mp.Pool(processes=8)
 
-    n = 100j
-    m = 100j
-    start = -100
-    stop = 100
-    f_index = 5
+    n = 300j
+    m = 300j
+    start = -10
+    stop = 10
+    f_index = 1
     c1 = ["3x"]
 
     ans = np.zeros((int(n.imag), int(m.imag), 3))
@@ -22,8 +22,8 @@ if __name__ == '__main__':
     #c = np.repeat(np.array(c1), -(n*m).real, axis=0).reshape(2, -1).T
     #workvec = np.array([2,5])
     #c = np.multiply(x, workvec)
-    c = 3*x
-
+    #c = 3*x
+    c = x+(1e-5)
     #c = np.random.rand(int(-(n*m).real), 2) *5
     list = [a for a in zip(x.tolist(), c.tolist())]
 
@@ -36,7 +36,7 @@ if __name__ == '__main__':
                     #  print(ansSet[tuple(t.roots.flatten().tolist())])
             work = ansSet[tuple(ii.roots.flatten().tolist())]
             work[1] = len(ii.steps)
-            ans[i//int(n.imag), i % int(m.imag), :] = work
+            ans[i % int(n.imag), i // int(n.imag), :] = work
 
     pool.close()
     pool.join()
@@ -44,7 +44,7 @@ if __name__ == '__main__':
     print(datetime.now()-startTime)
     name = (f"F-{f_index} X ({start}, {stop}, {int(n.imag)}x{int(m.imag)})" +
             f" C ({c1})")
-    with open(FILE_PATH + name, "w+") as file:
+    with open(FILE_PATH + name+'.npy', "w+") as file:
         np.save(FILE_PATH + name+'.npy', ans, allow_pickle=False)
         np.save(FILE_PATH + name +'_ansSet'+'.npy', ansSet)
     print(ansSet)

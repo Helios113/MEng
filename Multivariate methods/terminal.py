@@ -10,12 +10,12 @@ if __name__ == '__main__':
     
     pool = mp.Pool(processes=8)
     c1 = ["None"]
-    n = 100j
-    m = 100j
+    n = 300j
+    m = 300j
 
-    start = -100
-    stop = 100
-    f_index = 5
+    start = -10
+    stop = 10
+    f_index = 1
     x = np.mgrid[start:stop:n, start:stop:m].reshape(2, -1).T
     ans = np.zeros((int(n.imag), int(m.imag), 3))
     ansSet = {}
@@ -39,6 +39,6 @@ if __name__ == '__main__':
     print("Ans set length:", len(ansSet))
     name = (f"F-{f_index} X ({start}, {stop}, {int(n.imag)}x{int(m.imag)})" +
             f" C ({c1})")
-    with open(FILE_PATH + name, "w+") as file:
+    with open(FILE_PATH + name+'.npy', "w+") as file:
         np.save(FILE_PATH + name +'.npy', ans, allow_pickle=False)
         np.save(FILE_PATH + name +'_ansSet'+'.npy', ansSet)
