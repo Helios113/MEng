@@ -1,6 +1,8 @@
 import numpy as np
 from numpy.linalg import pinv
 from functools import partial
+from datetime import datetime
+startTime = datetime.now()
 delta = 1e-6
 
 
@@ -52,9 +54,12 @@ class ENM:
 
         a[i] -= delta
         b[i] += delta
-
+        #print(a)
+        #print(b)
         fa = func(a)
         fb = func(b)
+        #print((fb-fa)/(2*delta))
+        #print("????????????????????")
         return (fb-fa)/(2*delta)
 
     #  Assembiling Jacobian inverse (pij)
@@ -91,10 +96,14 @@ class ENM:
                     break
             #  print(self.__x)
             steps.append(self.__x.flatten())
-            self.__x = self.__x - np.matmul(self.p(), self.q())
+            qq = self.q()
+            pp = self.p()
+            #print(pp)
+            #print(qq)
+            self.__x = self.__x - np.matmul(pp, qq)
             cnt += 1
-        self.__x = self.__x - np.matmul(self.p(), self.q())
-        #  print(self.x)
+        #self.__x = self.__x - np.matmul(self.p(), self.q())
+        #print(self.__x)
         if self.check_root(self.__x):
             return np.around(self.__x, 5), steps
         return None, steps
@@ -129,3 +138,10 @@ class ENM:
         for i in self.f1:
             pcg.append((X, Y, i([X, Y])))
         return pcg
+
+x = np.array([1.0, 2.0])
+c = np.array([2.0, 4.0])
+
+e = ENM([x,c])
+print(e.roots, len(e.steps))
+print(datetime.now() - startTime)
