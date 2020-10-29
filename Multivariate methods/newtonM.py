@@ -49,16 +49,18 @@ def is_invertible(a):
 
 
 def check_root(x):
-    ans = 0
-    global delta
-    global L
-    for i in L:
-        #  print(np.linalg.norm(i(x)))
-        ans += np.linalg.norm(i(x))
-        #  print(ans)
-    if ans <= delta:
-        return True
-    return False
+    ans = np.array([1, 2.718])
+    if isinstance(ans, np.ndarray):
+        if np.linalg.norm(ans-x.flatten()) <= 1e-3:
+            return True
+        else:
+            print(x.flatten())
+    else:
+        for i in self.f1: 
+            ans += np.linalg.norm(i(x))
+        if ans <= 1e-3:
+            return True
+        return False
 
 
 def f(L, x):

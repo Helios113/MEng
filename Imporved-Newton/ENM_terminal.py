@@ -8,12 +8,12 @@ if __name__ == '__main__':
     startTime = datetime.now()
     pool = mp.Pool(processes=8)
 
-    n = 300j
-    m = 300j
+    n = 20j
+    m = 20j
     start = -10
     stop = 10
     f_index = 1
-    c1 = ["3x"]
+    c1 = ["Rand5"]
 
     ans = np.zeros((int(n.imag), int(m.imag), 3))
     ansSet = {}
@@ -22,8 +22,8 @@ if __name__ == '__main__':
     #workvec = np.array([2,5])
     #c = np.multiply(x, workvec)
     #c = 3*x
-    c = x+(1e-5)
-    #c = np.random.rand(int(-(n*m).real), 2) *5
+    #c = x+(1e-5)
+    c = np.random.rand(int(-(n*m).real), 2) *5
     list = [a for a in zip(x.tolist(), c.tolist())]
 
     for i, ii in enumerate(pool.imap(ENM.ENM, list),start=0):
@@ -31,7 +31,7 @@ if __name__ == '__main__':
         if ii.roots is not None:
             if tuple(ii.roots.flatten().tolist()) not in ansSet:
                 ansSet[tuple(ii.roots.flatten().tolist())] = np.array(
-                        [len(ansSet)+1, 0, 0], dtype='int32')
+                        [len(ansSet)+1, 0, 0])
                     #  print(ansSet[tuple(t.roots.flatten().tolist())])
             work = ansSet[tuple(ii.roots.flatten().tolist())]
             work[1] = len(ii.steps)
@@ -46,5 +46,6 @@ if __name__ == '__main__':
     with open(FILE_PATH + name+'.npy', "w+") as file:
         np.save(FILE_PATH + name+'.npy', ans, allow_pickle=False)
         np.save(FILE_PATH + name +'_ansSet'+'.npy', ansSet)
+    print("Ans set length:", len(ansSet))
     print(ansSet)
 

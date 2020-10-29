@@ -10,8 +10,8 @@ if __name__ == '__main__':
     
     pool = mp.Pool(processes=8)
     c1 = ["None"]
-    n = 300j
-    m = 300j
+    n = 20j
+    m = 20j
 
     start = -10
     stop = 10
@@ -36,9 +36,11 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
     print("Done in:", datetime.now()-startTime)
-    print("Ans set length:", len(ansSet))
+    
     name = (f"F-{f_index} X ({start}, {stop}, {int(n.imag)}x{int(m.imag)})" +
             f" C ({c1})")
     with open(FILE_PATH + name+'.npy', "w+") as file:
         np.save(FILE_PATH + name +'.npy', ans, allow_pickle=False)
         np.save(FILE_PATH + name +'_ansSet'+'.npy', ansSet)
+    print("Ans set length:", len(ansSet))
+    print(ansSet)

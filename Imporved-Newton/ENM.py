@@ -101,18 +101,15 @@ class ENM:
 
     def check_root(self, x):
         ans = np.array([1, 2.718])
-        #ans =0
-        global delta
-        #for i in self.f1:   
-            #print(np.linalg.norm(i(x)))
-        #    ans += np.linalg.norm(i(x))
-        #  print(ans)
-        if np.linalg.norm(ans-x.flatten()) <= delta*10**3: #something like this
-            return True
-        #print("diff", np.linalg.norm(ans-np.round(x,3).flatten()))
-        #if ans <= delta:
-        #    return True
-        return False
+        if isinstance(ans, np.ndarray):
+            if np.linalg.norm(ans-x.flatten()) <= 1e-3:
+                return True
+        else:
+            for i in self.f1: 
+                ans += np.linalg.norm(i(x))
+            if ans <= 1e-3:
+                return True
+            return False
 
     def mfunc(self, nos):
         if self.roots is None:
