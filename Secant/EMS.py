@@ -1,13 +1,17 @@
 import numpy as np
-
-delta = 1e-10
+from functools import partial
+delta = 1e-6
 
 
 def fun(x):
     return np.array([np.exp(x[0])-x[1], x[0]*x[1]-np.exp(x[0])])
 
-def P(x,c):
-    
+
+def P(c, x):
+    a = (x-c)*fun(x)
+    b = fun(x)-fun(c)
+    return a/b
+
 x0 = np.array([10, 10])
 x1 = np.array([1, 3])
 c = np.array([2, 4])
@@ -47,7 +51,6 @@ def secant(f, x00, x11, iter):
         print("ITERATION END ////////////////")
     return x2
 
-
-ans = secant(fun, x0, x1,100)
+ans = secant(partial(P, c), x0, x1,25)
 print(ans)
 print(fun(ans))
