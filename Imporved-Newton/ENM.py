@@ -6,7 +6,7 @@ delta = 1e-6
 
 def f1(x):
     #  x_{1}^{3}-3x_1x_2^2-1\\
-    return np.exp(x[0])-x[1]
+    #1return np.exp(x[0])-x[1]
     #2return x[0]**2-x[1]**2-9
     #return x[0]**3-3*x[0]*x[1]**2-1
     
@@ -14,7 +14,7 @@ def f1(x):
 
 def f2(x):
     #  3x_1^2x_2-x_2^3\\
-    return x[0]*x[1]-np.exp(x[0])
+    #1return x[0]*x[1]-np.exp(x[0])
     #2return 2*x[0]*x[1]
     #return 3*x[0]**2*x[1]-x[1]**3
 
