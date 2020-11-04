@@ -8,14 +8,14 @@ def f1(x):
     #1return np.exp(x[0])-x[1]
     #2return x[0]**2-x[1]**2-9
 
-    #5return x[0]**3-3*x[0]*x[1]**2-1
+    return x[0]**3-3*x[0]*x[1]**2-1
 
 
 def f2(x):
     #1return x[0]*x[1]-np.exp(x[0])
     #2return 2*x[0]*x[1]
 
-    #5return 3*x[0]**2*x[1]-x[1]**3
+    return 3*x[0]**2*x[1]-x[1]**3
 
 
 L = [f1, f2]
@@ -26,7 +26,7 @@ def Newton(x):
     steps = []
     #print(x)
 
-    for i in range(100):
+    for i in range(20):
         if len(steps) > 1:
             if np.linalg.norm(steps[-1]-steps[-2]) < delta/10**6:
                 break
@@ -37,6 +37,7 @@ def Newton(x):
             return None, steps
         b = np.linalg.inv(j).dot(ff)
         x -= b
+        print(x)
         
     if check_root(x):
         #  print("True:",x)
@@ -71,3 +72,5 @@ def f(L, x):
     #  print(ans)
     return ans
     # for every fucntion evaluate it at vector x and return list of answers
+x = [1.0,2.0]
+Newton(x)

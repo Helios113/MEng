@@ -5,12 +5,12 @@ import matplotlib.cm as cm
 from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-c = ["None"]
-n = 300
-m = 300
-start = -1
-stop = 1
-f_index = 5
+c = ["3x"]
+n = 200
+m = 200
+start = -10
+stop = 10
+f_index = 2
 
 colors = plt.get_cmap("tab20c")
 outer_colors = colors(np.arange(5)*4)
@@ -31,7 +31,7 @@ FILE_PATH = (f'results/Ans F-{f_index} X ({start}, {stop}, {n}x{m})' +
 with open(FILE_PATH, "r") as file:
     ans = np.load(FILE_PATH, allow_pickle=False)
 #  print(ans[:,:])
-num = np.max(np.max(ans, axis =0)[:,0])
+num = np.max(np.max(ans, axis=0)[:, 0])
 ans = np.apply_along_axis(Transform, -1, ans)
 #maxx = np.max(ans[..., -1])
 ans[..., -1] /= 100
