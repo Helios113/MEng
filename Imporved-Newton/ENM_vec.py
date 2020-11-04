@@ -9,7 +9,8 @@ c = np.array([2, 5],dtype=float)
 
 def fun(x):
     #  x_{1}^{3}-3x_1x_2^2-1\\
-    return np.array([np.exp(x[0])-x[1], x[0]*x[1]-np.exp(x[0])])
+    #return np.array([np.exp(x[0])-x[1], x[0]*x[1]-np.exp(x[0])])
+    return np.array([x[0]**2-x[1]**2-9, 2*x[0]*x[1]])
     #  2return x[0]**2-x[1]**2-9
     #  return x[0]**3-3*x[0]*x[1]**2-1
 
@@ -48,18 +49,15 @@ def getPartial(f, x):
 
 
 def check_root(x):
-    ans = np.array([1, 2.718])
-    #ans =0
-    global delta
-    #for i in self.f1:   
-    #print(np.linalg.norm(i(x)))
-    #    ans += np.linalg.norm(i(x))
-    #  print(ans)
-    if np.linalg.norm(ans-x.flatten()) <= delta*10**3: #something like this
-        return True
-    #print("diff", np.linalg.norm(ans-np.round(x,3).flatten()))
-    #if ans <= delta:
-    #    return True
+    #ans = np.array([1, 2.718])
+    ans = 0
+    if isinstance(ans, np.ndarray):
+        if np.linalg.norm(ans-x.flatten()) <= 1e-3:
+            return True
+    else:
+        ans += np.linalg.norm(fun(x))
+        if ans <= 1e-3:
+            return True
     return False
 
 

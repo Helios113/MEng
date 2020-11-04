@@ -4,26 +4,27 @@ from functools import partial
 from datetime import datetime
 startTime = datetime.now()
 delta = 1e-6
-x = np.array([1, 2],dtype=float)
+
 c = np.array([2, 5],dtype=float)
 
 def fun(x):
     #  x_{1}^{3}-3x_1x_2^2-1\\
     #1return np.array([np.exp(x[0])-x[1], x[0]*x[1]-np.exp(x[0])])
-    return np.array([x[0]**2-x[1]**2-9, 2*x[0]*x[1]])
-    #  return x[0]**3-3*x[0]*x[1]**2-1
+    #return np.array([x[0]**2-x[1]**2-9, 2*x[0]*x[1]])
+    return np.array([x[0]**3-3*x[0]*x[1]**2-1, 3*x[0]**2*x[1]-x[1]**3])
 
 
 def grad_fun(x):
     #return np.array([np.exp(x[0]), -1, x[1]-np.exp(x[0]), x[0]]).reshape(2, 2)
-    return np.array([2*x[0], -2*x[1], 2*x[1] ,2*x[0]]).reshape(2, 2)
-
+    #return np.array([2*x[0], -2*x[1], 2*x[1] ,2*x[0]]).reshape(2, 2)
+    return np.array([3*x[0]**2-3*x[1]**2, 6*x[0]*x[1], 6*x[0]*x[1], 3*x[0]**2-3*x[1]**2]).reshape(2, 2)
 
 def P(c,x):
     a = x-c
     b = fun(x)-fun(c)
     d = fun(x)
-    return np.matmul(a.reshape(2,-1),(d/b).reshape(-1,2)).T
+    #c = np.divide(d, b, out=np.zeros_like(d), where=b!=0)
+    return np.matmul(a.reshape(2,-1), (d/b).reshape(-1,2)).T
 
 
 def getPartial(x):
@@ -36,10 +37,13 @@ def getPartial(x):
     num2 = el2*gr
     num1 = el3*gr
     den = el3**2
+
+    #d = np.divide((num1-num2), den, out=np.zeros_like(num1), where=den!=0)
     ans = np.outer(el1, ((num1-num2)/den).T)
     ans[::, :2:] = ans[::, :2:].T
     ans[::, 2:4:] = ans[::, 2:4:].T
 
+    #a = np.divide(el2, el3, out=np.zeros_like(el2), where=el3!=0)
     ans1 = np.outer(np.identity(2), el2/el3).T    
     hold = ans1[1::, :2:].copy()
     ans1[1::, :2:] = ans1[:1:, 2:4:]
@@ -51,17 +55,14 @@ def getPartial(x):
 
 def check_root(x):
     #ans = np.array([1, 2.718])
-    ans =0
-    global delta
-    #for i in self.f1:   
-    #print(np.linalg.norm(i(x)))
-    #    ans += np.linalg.norm(i(x))
-    #  print(ans)
-    if np.linalg.norm(ans-x.flatten()) <= delta*10**3: #something like this
-        return True
-    #print("diff", np.linalg.norm(ans-np.round(x,3).flatten()))
-    #if ans <= delta:
-    #    return True
+    ans = 0
+    if isinstance(ans, np.ndarray):
+        if np.linalg.norm(ans-x.flatten()) <= 1e-3:
+            return True
+    else:
+        ans += np.linalg.norm(fun(x))
+        if ans <= 1e-3:
+            return True
     return False
 #  Iterate method
 #
@@ -71,6 +72,8 @@ def check_root(x):
 def solve(x):
     global delta
     global c
+    c = x[2:]
+    x = x[:2]
     cnt = 0
     for i in range(10):
         cnt += 1
@@ -82,12 +85,6 @@ def solve(x):
         x = x - step.flatten()
     #print(x)
     if check_root(x):
-        return x, cnt
+        return np.round(x, 3).tolist(), cnt
     return None, cnt
 
-
-#print(getPartial(x))
-
-
-print(solve(x))
-print(datetime.now() - startTime)

@@ -22,15 +22,15 @@ if __name__ == '__main__':
     #q = nm.Newton(x.tolist()[0])
     #print("Return answer:", q[0])
     
-    for i, ii in enumerate(map(nm.Newton, x.tolist()), start=0):
+    for i, ii in enumerate(pool.imap(nm.Newton, x.tolist()), start=0):
         tools.printProgressBar(i, -(n*m).real, prefix="Progress", suffix="Complete", length = 50)
         if ii[0] is not None:
             if tuple(ii[0].flatten().tolist()) not in ansSet:
                 ansSet[tuple(ii[0].flatten().tolist())] = np.array(
-                        [len(ansSet)+1, len(ii[1]), 0], dtype='int32')
+                        [len(ansSet)+1, ii[1], 0], dtype='int32')
                 #  print(ansSet[tuple(t.roots.flatten().tolist())])
             work = ansSet[tuple(ii[0].flatten().tolist())]
-            work[1] = len(ii[1])
+            work[1] = ii[1]
             ans[i % int(n.imag), i // int(n.imag), :] = work
    
     pool.close()

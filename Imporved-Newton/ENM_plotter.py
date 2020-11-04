@@ -5,9 +5,9 @@ import matplotlib.cm as cm
 from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-c = ["3x"]
-n = 300
-m = 300
+c = ["3x1"]
+n = 500
+m = 500
 start = -10
 stop = 10
 f_index = 1
