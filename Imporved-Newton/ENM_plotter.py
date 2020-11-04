@@ -5,16 +5,16 @@ import matplotlib.cm as cm
 from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-c = ["None"]
+c = ["3x"]
 n = 200
 m = 200
 start = -10
 stop = 10
-f_index = 5
+f_index = 1
 
 colors = plt.get_cmap("tab20c")
 outer_colors = colors(np.arange(5)*4)
-#outer_colors[0] = [1, 1, 1, 1]
+outer_colors = np.vstack(([1, 1, 1, 1], outer_colors))
 
 
 def Transform(a):
@@ -31,12 +31,14 @@ FILE_PATH = (f'results/Ans F-{f_index} X ({start}, {stop}, {n}x{m})' +
 with open(FILE_PATH, "r") as file:
     ans = np.load(FILE_PATH, allow_pickle=False)
 #  print(ans[:,:])
-num = ans.max(axis=0)[0][0]
+num = np.max(np.max(ans, axis=0)[:, 0])
 ans = np.apply_along_axis(Transform, -1, ans)
-maxx = np.max(ans[..., -1])
-ans[..., -1] /= maxx
-ans[..., ans==0] =1
-minn = np.min(ans[..., -1])
+#maxx = np.max(ans[..., -1])
+ans[..., -1] /= 100
+ans[..., ans == 0] = 1
+ans[..., -1] += 1
+ans[..., -1] /= 2
+
 #  Plotting
 
 plt.rcParams['font.size'] = 12
@@ -46,16 +48,15 @@ ax = fig.add_subplot(1, 1, 1)
 imgplot = plt.imshow(ans, origin='lower', extent=[start, stop, start, stop])
 ax.set_xlabel(r'$x_0$', labelpad=10)
 ax.set_ylabel(r'$x_1$', labelpad=10)
-plt.title(f'f{f_index} c = {c}')
 
 artists = []
-
-for i in range(1, int(num)+2):
+print("Length:",num)
+for i in range(1, int(num)+1):
     change1 = outer_colors[i].copy()
     col1 = np.array([change1, ]*12)
-    col1[..., -1] = np.linspace(minn, 1, num=12)
+    col1[..., -1] = np.linspace(0.5, 1, num=12)
     newcmp = ListedColormap(col1)
-    norm = mpl.colors.Normalize(vmin=minn*maxx, vmax=maxx)
+    norm = mpl.colors.Normalize(vmin=0, vmax=100)
     axins = inset_axes(ax,
                        width="5%",  # width = 5% of parent_bbox width
                        height="100%",  # height : 50%
@@ -64,7 +65,7 @@ for i in range(1, int(num)+2):
                        bbox_transform=ax.transAxes,
                        borderpad=0
                        )
-    if i == int(num)+1:
+    if i == int(num):
         cb = fig.colorbar(cm.ScalarMappable(cmap=newcmp, norm=norm),
                           cax=axins)
         cb.ax.set_ylabel('Iterations',)
@@ -77,4 +78,4 @@ for i in range(1, int(num)+2):
 
 plt.savefig(f'graphics/F-{f_index} X ({start}, {stop}, {n}x{m})' +
             f' C ({c}).png', bbox_inches='tight', pad_inches=0.1)
-plt.show()
+#plt.show()
