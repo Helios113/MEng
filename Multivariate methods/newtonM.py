@@ -24,15 +24,14 @@ def Newton(x):
         if not is_invertible(j):
             return None, cnt
         b = np.linalg.inv(j).dot(f)
-        if np.linalg.norm(b) < 1e-3:
+        if np.linalg.norm(b) < 1e-6:
             break
         x -= b
-        print(x)
         cnt+=1
         
     if check_root(x):
         #  print("True:",x)
-        return np.around(x, 5), cnt
+        return np.around(x, 3), cnt
     #  print("False:",x, steps)
     return None, cnt
 
