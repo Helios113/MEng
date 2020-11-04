@@ -10,7 +10,7 @@ n = 200
 m = 200
 start = -10
 stop = 10
-f_index = 2
+f_index = 1
 
 colors = plt.get_cmap("tab20c")
 outer_colors = colors(np.arange(5)*4)

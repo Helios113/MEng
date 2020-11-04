@@ -12,7 +12,7 @@ if __name__ == '__main__':
     m = 200j
     start = -10
     stop = 10
-    f_index = 2
+    f_index = 1
     c1 = ["3x"]
 
     ans = np.zeros((int(n.imag), int(m.imag), 3))
