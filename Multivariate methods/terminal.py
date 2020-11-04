@@ -10,12 +10,12 @@ if __name__ == '__main__':
     
     pool = mp.Pool(processes=8)
     c1 = ["None"]
-    n = 300j
-    m = 300j
+    n = 200j
+    m = 200j
 
     start = -10
     stop = 10
-    f_index = 1
+    f_index = 5
     x = np.mgrid[start:stop:n, start:stop:m].reshape(2, -1).T
     ans = np.zeros((int(n.imag), int(m.imag), 3))
     ansSet = {}

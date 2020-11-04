@@ -12,7 +12,7 @@ def fun(x):
 def grad_fun(x):
     #return np.array([np.exp(x[0]), -1, x[1]-np.exp(x[0]), x[0]]).reshape(2, 2)
     #return np.array([2*x[0], -2*x[1], 2*x[1] ,2*x[0]]).reshape(2, 2)
-    return np.array([3*x[0]**2-3*x[1]**2, 6*x[0]*x[1], 6*x[0]*x[1], 3*x[0]**2-3*x[1]**2]).reshape(2, 2)
+    return np.array([3*x[0]**2-3*x[1]**2, -6*x[0]*x[1], 6*x[0]*x[1], 3*x[0]**2-3*x[1]**2]).reshape(2, 2)
 
 
 def Newton(x):
@@ -27,6 +27,7 @@ def Newton(x):
         if np.linalg.norm(b) < 1e-3:
             break
         x -= b
+        print(x)
         cnt+=1
         
     if check_root(x):
@@ -51,3 +52,6 @@ def check_root(x):
         if ans <= 1e-3:
             return True
     return False
+
+x = [1.0,2.0]
+Newton(x)

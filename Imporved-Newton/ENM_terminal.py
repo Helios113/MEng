@@ -8,12 +8,12 @@ if __name__ == '__main__':
     startTime = datetime.now()
     pool = mp.Pool(processes=8)
 
-    n = 100j
-    m = 100j
+    n = 200j
+    m = 200j
     start = -10
     stop = 10
-    f_index = 1
-    c1 = ["ttt"]
+    f_index = 5
+    c1 = ["3xold"]
 
     ans = np.zeros((int(n.imag), int(m.imag), 3))
     ansSet = {}
@@ -21,8 +21,8 @@ if __name__ == '__main__':
     #c = np.repeat(np.array(c1), -(n*m).real, axis=0).reshape(2, -1).T
     #workvec = np.array([2,5])
     #c = np.multiply(x, workvec)
-    #c = 3*x
-    c = x+(1e-5)
+    c = 3*x
+    #c = x+(1e-5)
     #c = np.random.rand(int(-(n*m).real), 2) *5
     list = [a for a in zip(x.tolist(), c.tolist())]
 
