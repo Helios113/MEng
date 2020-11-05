@@ -9,9 +9,9 @@ if __name__ == '__main__':
     pool = mp.Pool(processes=8)
     n = 300j
     m = 300j
-    start = -1
-    stop = 1
-    f_index = 5
+    start = -10
+    stop = 10
+    f_index = 1
     c1 = ["3x"]
     ans = np.zeros((int(n.imag), int(m.imag), 3))
     ansSet = {}
@@ -32,13 +32,15 @@ if __name__ == '__main__':
                     #  print(ansSet[tuple(t[0])])
             work = ansSet[tuple(ii[0])]
             work[1] = ii[1]
-            ans[i % int(n.imag), i // int(n.imag), :] = work
+        if ii[0] is None:
+            work = [0,ii[1],0]
+        ans[i % int(n.imag), i // int(n.imag), :] = work
 
     pool.close()
     pool.join()
     print("done")
     print(datetime.now()-startTime)
-    name = (f"F-{f_index} X ({start}, {stop}, {int(n.imag)}x{int(m.imag)})" +
+    name = (f"FN-{f_index} X ({start}, {stop}, {int(n.imag)}x{int(m.imag)})" +
             f" C ({c1})")
     with open(FILE_PATH + name+'.npy', "w+") as file:
         np.save(FILE_PATH + name+'.npy', ans, allow_pickle=False)

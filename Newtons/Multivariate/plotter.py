@@ -5,17 +5,17 @@ import matplotlib.cm as cm
 from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-c = ["1e-5"]
-n = 200
-m = 200
-root = [1, 2.718]
-start = -1
-stop = 1
-f_index = 5
+c = ["3x"]
+n = 300
+m = 300
+root = [0,0]
+start = -10
+stop = 10
+f_index = 1
 
 colors = plt.get_cmap("tab20c")
 outer_colors = colors(np.arange(5)*4)
-outer_colors = np.vstack(([1, 1, 1, 1], outer_colors))
+outer_colors = np.vstack(([0, 0, 0, 0], outer_colors))
 
 
 def Transform(a):
@@ -27,19 +27,27 @@ def Transform(a):
     return n
 
 
-FILE_PATH = (f'results/Ans F-{f_index} X ({start}, {stop}, {n}x{m})' +
+FILE_PATH = (f'results/Ans FN-{f_index} X ({start}, {stop}, {n}x{m})' +
              f' C ({c}).npy')
 with open(FILE_PATH, "r") as file:
     ans = np.load(FILE_PATH, allow_pickle=False)
 #  print(ans[:,:])
 num = np.max(np.max(ans, axis=0)[:, 0])
 ans = np.apply_along_axis(Transform, -1, ans)
-#maxx = np.max(ans[..., -1])
-ans[..., -1] /= 100
-ans[..., ans == 0] = 1
-ans[..., -1] += 1
-ans[..., -1] /= 2
 
+
+#ans[np.where(ans[:,:,3] == 100)] = [1,1,1,100]
+rangeM = ans[np.where(ans[:,:,0] != 0)]
+#rangeM = rangeM[np.where(rangeM[0,:] != 1)]
+maxx = np.max(rangeM[..., -1])
+minn = np.min(rangeM[..., -1])
+
+ans[..., -1] /= maxx
+ans[..., -1] += 0.5
+ans[..., -1] /= 1.5
+
+ans[np.where(ans[:,:,3] == ((100/maxx)+0.5)/1.5 )] = [0,0,0,0]
+ans[np.where(ans[:,:,0] == 0)] = [0,0,0,0.8]
 #  Plotting
 
 plt.rcParams['font.size'] = 12
@@ -55,9 +63,9 @@ print("Length:",num)
 for i in range(1, int(num)+1):
     change1 = outer_colors[i].copy()
     col1 = np.array([change1, ]*12)
-    col1[..., -1] = np.linspace(0.5, 1, num=12)
+    col1[..., -1] = np.linspace(0.33, 1, num=12)
     newcmp = ListedColormap(col1)
-    norm = mpl.colors.Normalize(vmin=0, vmax=100)
+    norm = mpl.colors.Normalize(vmin=minn, vmax=maxx)
     axins = inset_axes(ax,
                        width="5%",  # width = 5% of parent_bbox width
                        height="100%",  # height : 50%
@@ -77,6 +85,6 @@ for i in range(1, int(num)+1):
     cb.ax.set_xlabel(r'$r_{{{}}}$'.format(i))
     artists.append(cb)
 
-plt.savefig(f'graphics/F-{f_index} X ({start}, {stop}, {n}x{m})' +
+plt.savefig(f'graphics/FN-{f_index} X ({start}, {stop}, {n}x{m})' +
             f' C ({c}).png', bbox_inches='tight', pad_inches=0.1)
 #plt.show()

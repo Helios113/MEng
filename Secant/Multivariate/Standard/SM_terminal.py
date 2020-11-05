@@ -38,7 +38,7 @@ if __name__ == '__main__':
     pool.join()
     print("done")
     print(datetime.now()-startTime)
-    name = (f"F-{f_index} X ({start}, {stop}, {int(n.imag)}x{int(m.imag)})" +
+    name = (f"FS-{f_index} X ({start}, {stop}, {int(n.imag)}x{int(m.imag)})" +
             f" C ({c1}) SECANT")
     with open(FILE_PATH + name+'.npy', "w+") as file:
         np.save(FILE_PATH + name+'.npy', ans, allow_pickle=False)
