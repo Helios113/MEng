@@ -1,15 +1,43 @@
 import numpy as np
-def secant_method(f, x0, x1, iterations):
+conDelta = 0.001414
+delta = 1e-4
+
+
+def fun(x):
+    return 1/np.exp(x) - 10
+
+
+
+def check_root(x):
+    global conDelta
+    ans = np.array([-2.303])
+    #  ans = 0
+    if isinstance(ans, np.ndarray):
+        if np.linalg.norm(ans-x.flatten()) <= conDelta:
+            return True
+    else:
+        ans += np.linalg.norm(fun(x))
+        if ans <= conDelta:
+            return True
+    return False
+
+def solve(x):
+    global delta
+    x0 = x[0]
+    x1 = x[1]
+    cnt = 0
     """Return the root calculated using the secant method."""
-    for i in range(iterations):
-        x2 = x1 - f(x1) * (x1 - x0) / float(f(x1) - f(x0))
+    for i in range(100):
+        cnt+=1
+        step = fun(x1) * (x1 - x0) / float(fun(x1) - fun(x0))
+        x2 = x1 - step
+        if np.abs(step) < delta:
+            print(x2)
+            break
         x0, x1 = x1, x2
-        print(x0, x1, x2)
+
+    if check_root(x2):
+        return np.round(x2, 3).tolist(), cnt
+    return None, cnt    
     return x2
 
-def f_example(x):
-    return 1/np.exp(x) - 10 #problem
-
-root = secant_method(f_example, 20, 10, 15)
-
-print("Root: {}".format(root))  # Root: 24.738633748750722

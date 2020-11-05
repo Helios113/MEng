@@ -5,7 +5,7 @@ import matplotlib.cm as cm
 from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-c = ["1e-5"]
+c = ["None"]
 n = 200
 m = 200
 root = [1, 2.718]
@@ -28,7 +28,7 @@ def Transform(a):
 
 
 FILE_PATH = (f'results/Ans F-{f_index} X ({start}, {stop}, {n}x{m})' +
-             f' C ({c}).npy')
+             f' C ({c}) SECANT.npy')
 with open(FILE_PATH, "r") as file:
     ans = np.load(FILE_PATH, allow_pickle=False)
 #  print(ans[:,:])
@@ -78,5 +78,5 @@ for i in range(1, int(num)+1):
     artists.append(cb)
 
 plt.savefig(f'graphics/F-{f_index} X ({start}, {stop}, {n}x{m})' +
-            f' C ({c}).png', bbox_inches='tight', pad_inches=0.1)
+            f' C ({c}) SECANT.png', bbox_inches='tight', pad_inches=0.1)
 #plt.show()

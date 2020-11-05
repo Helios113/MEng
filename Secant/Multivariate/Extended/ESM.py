@@ -1,56 +1,66 @@
 import numpy as np
-from functools import partial
 delta = 1e-6
+conDelta = 0.001414
+c = np.empty(2)
 
 
 def fun(x):
-    return np.array([np.exp(x[0])-x[1], x[0]*x[1]-np.exp(x[0])])
+    #  x_{1}^{3}-3x_1x_2^2-1\\
+    return np.array([np.exp(x[0])-x[1], x[0]*x[1]-np.exp(x[0])]) #  1
+    #  return np.array([x[0]**2-x[1]**2-9, 2*x[0]*x[1]])
+    #  return np.array([x[0]**3-3*x[0]*x[1]**2-1, 3*x[0]**2*x[1]-x[1]**3]) #  5
 
 
-def P(c, x):
+def P(x):
+    global c
     a = (x-c)*fun(x)
     b = fun(x)-fun(c)
     return a/b
 
-x0 = np.array([10, 10])
-x1 = np.array([1, 3])
-c = np.array([2, 4])
 
-def solve(f, x00, x11):
+def check_root(x):
+    global conDelta
+    ans = np.array([1, 2.718])
+    #  ans = 0
+    if isinstance(ans, np.ndarray):
+        if np.linalg.norm(ans-x.flatten()) <= conDelta:
+            return True
+    else:
+        ans += np.linalg.norm(fun(x))
+        if ans <= conDelta:
+            return True
+    return False
+
+
+def solve(x):
     global delta
-    x0 = x00.copy()
-    x1 = x11.copy()
-    for i in range(iter):
-        print("ITERATION:", i,"////////////////")
-        print("x1", x1)
-        ff = f(x1)
-        print("f(x1)", ff)
-        print("x0", x0)
-        print("f(x0)", f(x0))
-        dH = f(x1)-f(x0)
-        print("dH", dH)
-        t = np.zeros((2, 1))
-        t = (-ff/dH)#.reshape(2, -1)
+    global c
+    x0 = x[:2].copy()
+    x1 = x[2:4].copy()
+    c = x[4:].copy()
+    cnt = 0
+    for i in range(100):
+
+        ff = P(x1)
+
+        dH = P(x1)-P(x0)
+
+        #t = np.zeros((2, 1))
+        t = (-ff/dH)#  .reshape(2, -1)
         #  t = np.divide(-ff, dH, where=dH!=0).reshape(2,-1)
-        print("t", t)
-        #print("t_row", t[i % 2])
-        dXY = (x1-x0)#.reshape(-1, 2)
-        print("dXY", dXY)
 
-        #delt = np.matmul(t, dX)
-        #step = (dXY * t[i%2]).flatten()
+        dXY = (x1-x0)#  .reshape(-1, 2)
+
+        #  delt = np.matmul(t, dX)
+        #  step = (dXY * t[i%2]).flatten()
         step = (dXY * t).flatten()
-        #print("delt:",delt)
-        #step = delt.sum(axis=0).flatten()
-        print("Step:",step)
-        if np.linalg.norm(step) <= delta:
-            return x1
-        x2 = x1 + step
-        print("x2", x2)
-        x0, x1 = x1, x2
-        print("ITERATION END ////////////////")
-    return x2
 
-ans = secant(partial(P, c), x0, x1,25)
-print(ans)
-print(fun(ans))
+        #  step = delt.sum(axis=0).flatten()
+        x2 = x1 + step
+        if np.linalg.norm(step) <= delta:
+            break
+        x0, x1 = x1, x2
+        cnt += 1
+    if check_root(x2):
+        return np.round(x2, 2).tolist(), cnt
+    return None, cnt
