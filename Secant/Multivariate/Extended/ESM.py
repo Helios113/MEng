@@ -16,7 +16,7 @@ x0 = np.array([10, 10])
 x1 = np.array([1, 3])
 c = np.array([2, 4])
 
-def secant(f, x00, x11, iter):
+def solve(f, x00, x11):
     global delta
     x0 = x00.copy()
     x1 = x11.copy()
