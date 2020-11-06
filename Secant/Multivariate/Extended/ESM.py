@@ -47,7 +47,7 @@ def solve(x):
 
         dH = P(x1)-P(x0)
 
-        #t = np.zeros((2, 1))
+        #  t = np.zeros((2, 1))
         t = (-ff/dH)#  .reshape(2, -1)
         #  t = np.divide(-ff, dH, where=dH!=0).reshape(2,-1)
 

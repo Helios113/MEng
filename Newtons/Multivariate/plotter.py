@@ -5,17 +5,19 @@ import matplotlib.cm as cm
 from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-c = ["3x"]
-n = 300
-m = 300
+
+c = ["None"]
+n = 512
+m = 512
 root = [0,0]
-start = -10
-stop = 10
-f_index = 1
+start = -100
+stop = 100
+f_index = 3
 
 colors = plt.get_cmap("tab20c")
 outer_colors = colors(np.arange(5)*4)
 outer_colors = np.vstack(([0, 0, 0, 0], outer_colors))
+
 
 
 def Transform(a):
@@ -45,14 +47,15 @@ minn = np.min(rangeM[..., -1])
 ans[..., -1] /= maxx
 ans[..., -1] += 0.5
 ans[..., -1] /= 1.5
-
-ans[np.where(ans[:,:,3] == ((100/maxx)+0.5)/1.5 )] = [0,0,0,0]
+ans[np.where(ans[:,:,3] == ((100/maxx)+0.5)/1.5 )] = [1,1,1,0]
 ans[np.where(ans[:,:,0] == 0)] = [0,0,0,0.8]
+
+
 #  Plotting
 
 plt.rcParams['font.size'] = 12
 plt.rcParams['axes.linewidth'] = 2
-fig = plt.figure(figsize=(4, 4))
+fig = plt.figure(figsize=(10, 10))
 ax = fig.add_subplot(1, 1, 1)
 imgplot = plt.imshow(ans, origin='lower', extent=[start+root[0], stop+root[0], start+root[1], stop+root[1]])
 ax.set_xlabel(r'$x_0$', labelpad=10)
@@ -88,3 +91,5 @@ for i in range(1, int(num)+1):
 plt.savefig(f'graphics/FN-{f_index} X ({start}, {stop}, {n}x{m})' +
             f' C ({c}).png', bbox_inches='tight', pad_inches=0.1)
 #plt.show()
+
+

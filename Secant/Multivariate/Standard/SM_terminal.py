@@ -7,13 +7,13 @@ FILE_PATH = 'results/Ans '
 if __name__ == '__main__':
     startTime = datetime.now()
     pool = mp.Pool(processes=8)
-    n = 200j
-    m = 200j
+    n = 512j
+    m = 512j
     root = [1, 2.718]
     #Range
-    start = -1
-    stop = 1
-    f_index = 5
+    start = -50
+    stop = 50
+    f_index = 1
     c1 = ["None"]
 
 

@@ -5,12 +5,12 @@ import matplotlib.cm as cm
 from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-c = ["3x"]
-n = 300
-m = 300
-root = [0,0]
-start = -10
-stop = 10
+c = [1,2]
+n = 512
+m = 512
+root = [1,2.718]
+start = -50
+stop = 50
 f_index = 1
 
 colors = plt.get_cmap("tab20c")
@@ -28,7 +28,7 @@ def Transform(a):
 
 
 FILE_PATH = (f'results/Ans FS-{f_index} X ({start}, {stop}, {n}x{m})' +
-             f' C ({c}).npy')
+             f' C ({c}) SECANT.npy')
 with open(FILE_PATH, "r") as file:
     ans = np.load(FILE_PATH, allow_pickle=False)
 #  print(ans[:,:])
@@ -46,7 +46,7 @@ ans[..., -1] /= maxx
 ans[..., -1] += 0.5
 ans[..., -1] /= 1.5
 
-ans[np.where(ans[:,:,3] == ((100/maxx)+0.5)/1.5 )] = [0,0,0,0]
+ans[np.where(ans[:,:,3] == ((100/maxx)+0.5)/1.5 )] = [1,1,1,0]
 ans[np.where(ans[:,:,0] == 0)] = [0,0,0,0.8]
 #  Plotting
 

@@ -3,26 +3,35 @@ import NM as nm
 import tools
 import multiprocessing as mp
 from datetime import datetime
+import subprocess
+
+
 FILE_PATH = 'results/Ans '
+
+
+def sendmessage(message):
+    subprocess.Popen(['notify-send', message])
+    return
+
 
 if __name__ == '__main__':
     startTime = datetime.now()
     
     pool = mp.Pool(processes=8)
     c1 = ["None"]
-    n = 200j
-    m = 200j
+    n = 512j
+    m = 512j
 
-    start = -10
-    stop = 10
-    f_index = 5
+    start = -100
+    stop = 100
+    f_index = 3
     x = np.mgrid[start:stop:n, start:stop:m].reshape(2, -1).T
     ans = np.zeros((int(n.imag), int(m.imag), 3))
     ansSet = {}
     #q = nm.Newton(x.tolist()[0])
     #print("Return answer:", q[0])
     
-    for i, ii in enumerate(pool.imap(nm.Newton, x.tolist()), start=0):
+    for i, ii in enumerate(pool.imap(nm.solve, x.tolist()), start=0):
         tools.printProgressBar(i, -(n*m).real, prefix="Progress", suffix="Complete", length = 50)
         if ii[0] is not None:
             if tuple(ii[0].flatten().tolist()) not in ansSet:
@@ -42,3 +51,4 @@ if __name__ == '__main__':
     with open(FILE_PATH + name+'.npy', "w+") as file:
         np.save(FILE_PATH + name +'.npy', ans, allow_pickle=False)
         np.save(FILE_PATH + name +'_ansSet'+'.npy', ansSet)
+    sendmessage("Task Finished")
