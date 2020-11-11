@@ -9,20 +9,18 @@ conDelta = 0.001414
 
 
 def fun(x):
-    return np.array([np.exp(x[0])-x[1], x[0]*x[1]-np.exp(x[0])]) #  1
+    #return np.array([np.exp(x[0])-x[1], x[0]*x[1]-np.exp(x[0])]) #  1
     #return np.array([x[0]**2-x[1]**2-9, 2*x[0]*x[1]])  #  2
     #return np.array([x[0]**2-x[1]**3-x[0]*x[1]**2-1, x[0]**3-x[1]*x[1]**3-4])  #  3
     #return np.array([np.sin(x[0])*np.exp(x[0])+np.sin(x[1])*np.exp(x[1])-10, x[0]+x[1]])  #  4
-    #return np.array([x[0]**3-3*x[0]*x[1]**2-1, 3*x[0]**2*x[1]-x[1]**3]) #  5
+    return np.array([x[0]**3-3*x[0]*x[1]**2-1, 3*x[0]**2*x[1]-x[1]**3]) #  5
 
 
-x0 = np.array([10, 10])
-x1 = np.array([1, 3])
 
 def check_root(x):
     global conDelta
-    ans = np.array([1, 2.718])
-    #  ans = 0
+    #ans = np.array([1, 2.718])
+    ans = 0
     if isinstance(ans, np.ndarray):
         if np.linalg.norm(ans-x.flatten()) <= conDelta:
             return True

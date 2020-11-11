@@ -1,4 +1,4 @@
-import ENM as enm
+import ENM_mod as enm
 import numpy as np
 import tools
 from datetime import datetime
@@ -14,20 +14,21 @@ def sendmessage(message):
 if __name__ == '__main__':
     startTime = datetime.now()
     pool = mp.Pool(processes=8)
-    n = 512j
-    m = 512j
+    n = 200j
+    m = 200j
     start = -5
     stop = 5
-    f_index = 2
-    c1 = ["3x"]
+    f_index = 5
+    c1 = [0, 0]
     ans = np.zeros((int(n.imag), int(m.imag), 3))
     ansSet = {}
     x = np.mgrid[start:stop:n, start:stop:m].reshape(2, -1).T
     c = np.repeat(np.array(c1), -(n*m).real, axis=0).reshape(2, -1).T
     #workvec = np.array([2,5])
     #c = np.multiply(x, workvec)
-    c = 3*x
+    #c = 3*x
     #c = x+(1e-5)
+    #c = -x
     #c = np.random.rand(int(-(n*m).real), 2)
     #list = [a for a in zip(x.tolist(), c.tolist())]
     for i, ii in enumerate(pool.imap(enm.solve, np.hstack((x, c)))):

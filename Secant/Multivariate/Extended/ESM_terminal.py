@@ -7,23 +7,23 @@ FILE_PATH = 'results/Ans '
 if __name__ == '__main__':
     startTime = datetime.now()
     pool = mp.Pool(processes=8)
-    n = 512j
-    m = 512j
-    root = [1, 2.718]
+    n = 200j
+    m = 200j
+    root = [0,0]
     #Range
-    start = -50
-    stop = 50
-    f_index = 1
-    c1 = ["3x"]
+    start = -5
+    stop = 5
+    f_index = 5
+    c1 = [1,2]
 
 
     ans = np.zeros((int(n.imag), int(m.imag), 3))
     ansSet = {}
     x = np.mgrid[start+root[0]:stop+root[0]:n, start+root[1]:stop+root[1]:m].reshape(2, -1).T
     x1 = np.random.rand(int(-(n*m).real), 2)*2
-    c = 3*x
+    #c = 3*x
     
-    #c = np.repeat(np.array(c1), -(n*m).real, axis=0).reshape(2, -1).T
+    c = np.repeat(np.array(c1), -(n*m).real, axis=0).reshape(2, -1).T
     #workvec = np.array([2,5])
     #c = np.multiply(x, workvec)
     #c = x

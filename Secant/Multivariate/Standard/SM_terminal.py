@@ -9,11 +9,11 @@ if __name__ == '__main__':
     pool = mp.Pool(processes=8)
     n = 512j
     m = 512j
-    root = [1, 2.718]
+    root = [0,0]
     #Range
-    start = -50
-    stop = 50
-    f_index = 1
+    start = -1
+    stop = 1
+    f_index = 5
     c1 = ["None"]
 
 

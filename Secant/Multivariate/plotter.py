@@ -6,12 +6,12 @@ from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 c = [1,2]
-n = 512
-m = 512
-root = [1,2.718]
-start = -50
-stop = 50
-f_index = 1
+n = 200
+m = 200
+root = [0,0]
+start = -5
+stop = 5
+f_index = 5
 
 colors = plt.get_cmap("tab20c")
 outer_colors = colors(np.arange(5)*4)
