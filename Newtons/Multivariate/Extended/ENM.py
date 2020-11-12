@@ -6,16 +6,16 @@ startTime = datetime.now()
 delta = 1e-6
 conDelta = 0.001414
 def fun(x):
-    return np.array([np.exp(x[0])-x[1], x[0]*x[1]-np.exp(x[0])]) #  1
-    #return np.array([x[0]**2-x[1]**2-9, 2*x[0]*x[1]])  #  2
+    #return np.array([np.exp(x[0])-x[1], x[0]*x[1]-np.exp(x[0])]) #  1
+    return np.array([x[0]**2-x[1]**2-9, 2*x[0]*x[1]])  #  2
     #return np.array([x[0]**2-x[1]**3-x[0]*x[1]**2-1, x[0]**3-x[1]*x[1]**3-4])  #  3
     #return np.array([np.sin(x[0])*np.exp(x[0])+np.sin(x[1])*np.exp(x[1])-10, x[0]+x[1]])  #  4
     #return np.array([x[0]**3-3*x[0]*x[1]**2-1, 3*x[0]**2*x[1]-x[1]**3]) #  5
 
 
 def grad_fun(x):
-    return np.array([np.exp(x[0]), -1, x[1]-np.exp(x[0]), x[0]]).reshape(2, 2)  #  1
-    #return np.array([2*x[0], -2*x[1], 2*x[1], 2*x[0]]).reshape(2, 2)  #  2
+    #return np.array([np.exp(x[0]), -1, x[1]-np.exp(x[0]), x[0]]).reshape(2, 2)  #  1
+    return np.array([2*x[0], -2*x[1], 2*x[1], 2*x[0]]).reshape(2, 2)  #  2
     #return np.array([2*x[0]-x[1]**2, -3*x[1]**2-2*x[0]*x[1], 3*x[0]**2-x[1]**3, -3*x[0]*x[1]**2]).reshape(2, 2)  #  3
     #return np.array([np.exp(x[0])*(np.sin(x[0])+np.cos(x[0])),np.exp(x[1])*(np.sin(x[1])+np.cos(x[1])) , 1, 1]).reshape(2, 2)  #  4
     #return np.array([3*x[0]**2-3*x[1]**2, -6*x[0]*x[1], 6*x[0]*x[1], 3*x[0]**2-3*x[1]**2]).reshape(2, 2) #  5
@@ -24,6 +24,8 @@ def P(c,x):
     a = x-c
     b = fun(x)-fun(c)
     d = fun(x)
+    if not b.any():
+        return np.zeros((2,2))
     #c = np.divide(d, b, out=np.zeros_like(d), where=b!=0)
     return np.matmul(a.reshape(2,-1), (d/b).reshape(-1,2)).T
 
@@ -33,6 +35,8 @@ def getPartial(x):
     el1 = x-c
     el2 = fun(x)
     el3 = el2-fun(c)
+    if not el3.any():
+        return np.zeros((4,2))
     gr = grad_fun(x).T
 
     num2 = el2*gr
@@ -55,8 +59,8 @@ def getPartial(x):
 
 
 def check_root(x):
-    ans = np.array([1, 2.718])
-    #ans = 0
+    #ans = np.array([1, 2.718])
+    ans = 0
     if isinstance(ans, np.ndarray):
         if np.linalg.norm(ans-x.flatten()) <= conDelta:
             return True
@@ -78,15 +82,15 @@ def solve(x):
     cnt = 0
     for i in range(100):
         cnt += 1
-        p = pinv(getPartial(x)) 
         q = P(c, x).reshape(-1, 1)
+        p = pinv(getPartial(x)) 
         step = np.matmul(p, q)
         if np.linalg.norm(step) < delta:
             break
         x = x - step.flatten()
     #print(x)
     
-    if check_root(x) and cnt<100:
+    if check_root(x) and cnt<50:
         return np.round(x, 3).tolist(), cnt
     return None, cnt
 

@@ -22,9 +22,9 @@ if __name__ == '__main__':
     n = 512j
     m = 512j
 
-    start = -100
-    stop = 100
-    f_index = 3
+    start = -50
+    stop = 50
+    f_index = 5
     x = np.mgrid[start:stop:n, start:stop:m].reshape(2, -1).T
     ans = np.zeros((int(n.imag), int(m.imag), 3))
     ansSet = {}
