@@ -3,6 +3,7 @@ from typing import Callable
 
 import numpy as np
 from numpy.linalg import pinv
+from numpy.linalg import inv
 
 logger = logging.getLogger(__name__)
 
@@ -56,12 +57,14 @@ class GNSolver:
         if init_guess is not None:
             self.init_guess = init_guess
 
-        if init_guess is None:
+        if self.init_guess is None:
             raise Exception("Initial guess needs to be provided")
 
         self.coefficients = self.init_guess
         rmse_prev = np.inf
+        steps = 0
         for k in range(self.max_iter):
+            steps+=1
             residual = self.get_residual()
             jacobian = self._calculate_jacobian(self.coefficients, step=10 ** (-6))
             self.coefficients = self.coefficients - self._calculate_pseudoinverse(jacobian) @ residual
@@ -71,14 +74,14 @@ class GNSolver:
                 diff = np.abs(rmse_prev - rmse)
                 if diff < self.tolerance_difference:
                     logger.info("RMSE difference between iterations smaller than tolerance. Fit terminated.")
-                    return self.coefficients
+                    return self.coefficients, steps
             if rmse < self.tolerance:
                 logger.info("RMSE error smaller than tolerance. Fit terminated.")
-                return self.coefficients
+                return self.coefficients, steps
             rmse_prev = rmse
         logger.info("Max number of iterations reached. Fit didn't converge.")
 
-        return self.coefficients
+        return self.coefficients, steps
 
     def predict(self, x: np.ndarray):
         """
@@ -131,4 +134,4 @@ class GNSolver:
         """
         Moore-Penrose inverse.
         """
-        return pinv(x.T @ x) @ x.T
+        return inv(x.T @ x) @ x.T
