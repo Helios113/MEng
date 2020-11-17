@@ -68,6 +68,7 @@ class GNSolver:
             residual = self.get_residual()
             jacobian = self._calculate_jacobian(self.coefficients, step=10 ** (-6))
             self.coefficients = self.coefficients - self. _calculate_inverse(jacobian) @ residual
+            
             rmse = np.sqrt(np.sum(residual ** 2))
             logger.info(f"Round {k}: RMSE {rmse}")
             if self.tolerance_difference is not None:
