@@ -4,5 +4,5 @@
     "python.linting.enabled": true,
     "editor.fontSize": 16,
     "sudo": "True",
-    "python.pythonPath": "/usr/bin/python3"
+    "python.pythonPath": "/home/preslav/miniconda3/bin/python"
 }

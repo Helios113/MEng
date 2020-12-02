@@ -9,10 +9,10 @@ from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 c = [["None"]]
 n = 512
 m = 512
-root = [1.26, -0.794]
-start = -50
-stop = 50
-f_index = 4
+root = [0, 0]
+start = -2
+stop = 2
+f_index = 6
 
 colors = plt.get_cmap("tab20c")
 outer_colors = colors(np.arange(5)*4)

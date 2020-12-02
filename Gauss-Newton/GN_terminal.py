@@ -1,34 +1,41 @@
-from myGNE import GN
+from myGNE import GNSolver
 import numpy as np
 import matplotlib.pyplot as plt
+from model import func
+from datetime import datetime
 
 
-def func(x, coeff):
 
-    """
-    Function used for fitting
-    """
+np.random.seed(10)
 
-    return coeff[0] * x ** 3 + coeff[1] * x ** 2 + coeff[2] * x + coeff[3] + coeff[4] * np.sin(x)
+NOISE = 2
+COEFFICIENTS = [6,3,-0.1,12]
 
-# Coefficients used
-COEFFICIENTS = [-0.001, 3, 3, 2, 15]
-
-x = np.arange(1, 7)
+x = np.mgrid[1:8:200j, 1:8:200j].reshape(2, -1).T
+#x = np.arange(1,20)
+print(x)
 y = func(x, COEFFICIENTS)
+yn = y + NOISE * np.random.random_sample(y.shape)
 
-init_guess = [1,1,1,1,1]  # inital guess of coefficients
 
-a = GN(fit_function=func)  # creating class object
+solver = GNSolver(fit_function=func, max_iter=600, tolerance_difference=10 ** (-6))
+init_guess =1000*np.random.random(len(COEFFICIENTS))
+startTime = datetime.now()
+ANSWER = solver.fit(x, yn, init_guess)
+print("Result",datetime.now() - startTime)
 
-ANSWER = a.fit(x, y, init_guess)  # get fiited parameters
-
-"""
-Plotting
-"""
-fig, axs = plt.subplots(2)
-axs[0].plot(ANSWER[2])
-axs[0].set_title('Original step')
-axs[1].plot(ANSWER[3])
-axs[1].set_title('Corrected step')
+fit = solver.get_estimate()
+residual = solver.get_residual(solver.theta)
+print(ANSWER[0], ANSWER[1])
+print(COEFFICIENTS)
+plt.figure()
+plt.plot(x, y, label="Original, noiseless signal", linewidth=2)
+plt.plot(x, yn, label="Noisy signal", linewidth=2)
+plt.plot(x, fit, label="Fit", linewidth=2)
+plt.plot(x, residual, label="Residual", linewidth=2)
+plt.title("Gauss-Newton: curve fitting example")
+plt.xlabel("X")
+plt.ylabel("Y")
+plt.grid()
+plt.legend()
 plt.show()
