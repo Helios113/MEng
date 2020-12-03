@@ -1,35 +1,37 @@
 from model import func, der_func, der2_func
 import numpy as np
-import matplotlib.pyplot as plt
 from myGNE import GNSolver
+from datetime import datetime
+from scipy.interpolate import griddata
+ 
 
-COEFFICIENTS = [-0.001, 0.1,0.1,2,15]
-NOISE = 0
-x = np.arange(1,11)
-#x = np.mgrid[1:8:8j, 1:8:8j].reshape(2, -1).T
+COEFFICIENTS = [0.1,4,0.1,2]
+np.random.seed(10)
+
+#x = np.linspace(0,20,20)
+x = np.mgrid[1:20:20j, 1:20:20j].reshape(2, -1).T
 y = func(x,COEFFICIENTS)
-np.random.seed(24)
-yn = y + NOISE * np.random.random_sample(y.shape)
 
-init_guess = [1,1,1,1,1]#359*np.random.random(len(COEFFICIENTS)) 
+Ans = []
+for NOISE in np.linspace(0,4,8):
+    for DISTANCE in np.linspace(0,6,12):
+        for r in range(1):
+            yn = y + NOISE * np.random.random_sample(y.shape)
+            init_guess = (np.random.random(len(COEFFICIENTS))-0.5)*(10**DISTANCE)
+            dist = np.linalg.norm(COEFFICIENTS - init_guess)
+            ans = []
+            g = GNSolver(func,der_func,der2_func,500)
+            startTime = datetime.now()
+            a = g.fit(x,yn,init_guess, True)
+            r = g.get_rmse(a[0])
+            ans.append([NOISE, dist,DISTANCE, r, a[1]])
+        ans =np.mean(np.array(ans),axis=0)
+        Ans.append(ans)
+            #print(ans[0], ans[1], datetime.now() - startTime, a[0])
 
 
-g = GNSolver(func,der_func,der2_func,100)
+Ans = np.array(Ans)
+print(Ans.shape)
+with open('Gauss-Newton/test4.npy', 'wb') as f:
+    np.save(f, Ans)
 
-ans = g.fit(x,yn,init_guess, False)
-print(ans[0], ans[1])
-"""
-fit = g.get_estimate()
-residual = g.get_residual(ans[0])
-plt.figure()
-plt.plot(x, y, label="Original, noiseless signal", linewidth=2)
-plt.plot(x, yn, label="Noisy signal", linewidth=2)
-plt.plot(x, fit, label="Fit", linewidth=2)
-plt.plot(x, residual, label="Residual", linewidth=2)
-plt.title("Gauss-Newton: curve fitting example")
-plt.xlabel("X")
-plt.ylabel("Y")
-plt.grid()
-plt.legend()
-plt.show()
-"""

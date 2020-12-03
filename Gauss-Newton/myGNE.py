@@ -71,19 +71,16 @@ class GNSolver:
             else:
                 continue
                 #riJ = self.get_residual_der(self.theta)
-            if k == 18:
-                print(self.theta)
-                print(riJ)
             try:
                 th1 = np.linalg.solve(riJ.T @ riJ, -ri @ riJ)
-                print(f"Round {k} --------------")
-                print("coeffs", np.round(self.theta,6))
-                print("Step",np.round(th1,6))
-                print("---------------")
+                #print(f"Round {k} --------------")
+                #print("coeffs", np.round(self.theta,6))
+                #print("Step",np.round(th1,6))
+                #print("---------------")
             except:
-                print("Thetha1:",self.theta)
-                print("LHS",riJ.T @ riJ)
-                print("RHS", -ri @ riJ)
+                print(f"Round {k} --------------")
+                print(riJ.T @ riJ)
+                print(-ri @ riJ)
                 return
                 
             if not mode:
@@ -172,10 +169,10 @@ class GNSolver:
             if self.tolerance_difference is not None:
                 diff = np.abs(rmse_prev - rmse)
                 if diff < self.tolerance_difference:
-                    print("HERE")
+                    #print("HERE")
                     return self.theta, steps, stepps1, stepps2, rmse_steps
             if rmse < self.tolerance:
-                print("HERE2")
+                #print("HERE2")
                 return self.theta, steps, stepps1, stepps2, rmse_steps
             rmse_prev = rmse
 

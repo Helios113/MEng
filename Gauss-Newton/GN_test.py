@@ -69,13 +69,13 @@ class GNSolver:
             #print(jacobian)
             #print(residual)
             step = - self._calculate_pseudoinverse(jacobian) @ residual
-            if k == 18:
-                print(self.coefficients)
-                print(jacobian)
-            print(f"Round {k} --------------")
-            print("coeffs",np.round(self.coefficients,6))
-            print("Step", np.round(step,6))
-            print("---------------")
+            #if k == 18:
+            #    print(self.coefficients)
+            #    print(jacobian)
+            #print(f"Round {k} --------------")
+            #print("coeffs",np.round(self.coefficients,6))
+            #print("Step", np.round(step,6))
+            #print("---------------")
             
             self.coefficients = self.coefficients + step
             rmse = np.sqrt(np.sum(residual ** 2))
