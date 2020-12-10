@@ -8,7 +8,7 @@ from GN_test import GNSolver
 logging.basicConfig(level=logging.INFO)
 
 NOISE = 0
-COEFFICIENTS = [-0.001, 0.1, 0.1, 2, 15]
+COEFFICIENTS = [0.1,4,0.1,2] 
 
 
 
@@ -18,10 +18,10 @@ def main():
     x = np.arange(1, 11)
 
     y = func(x, COEFFICIENTS)
-    yn = y + NOISE * np.random.randn(len(x))
+    yn = y + NOISE * np.random.randn(len(y))
 
     solver = GNSolver(fit_function=func, max_iter=30)
-    init_guess = [1,1,1,1,1]#1000000 * np.random.random(len(COEFFICIENTS))
+    init_guess = [1,1,1,1]#1000000 * np.random.random(len(COEFFICIENTS))
     a = solver.fit(x, yn, init_guess)
     fit = solver.get_estimate()
     residual = solver.get_residual()

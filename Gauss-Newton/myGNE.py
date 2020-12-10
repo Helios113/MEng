@@ -9,6 +9,7 @@ class GNSolver:
                  derivative: Callable = None,
                  derivative2: Callable = None,
                  max_iter: int = 1000,
+                 original_root: np.ndarray = None,
                  tolerance_difference: float = 10 ** (-10),
                  tolerance: float = 10 ** (-9),
                  init_guess: np.ndarray = None,
@@ -17,6 +18,7 @@ class GNSolver:
             raise ValueError("Fit function has be inputed")
         self.function = fit_function
         self.max_iter = max_iter
+        self.original_root = np.array(original_root)
         self.tolerance_difference = tolerance_difference
         self.tolerance = tolerance
         self.theta = None
@@ -54,14 +56,16 @@ class GNSolver:
         
         self.theta = self.init_guess
         
-        rmse_prev = np.inf
-        steps = 0
+        mse_prev = np.inf
 
-        stepps1 = []
-        stepps2 = []
-        rmse_steps = []
+        step_number = 0
+        steps = []
+        mse_steps = []
+        q_rate = []
+        q1_rate = []
+        mu_rate = []
         for k in range(self.max_iter):
-            steps += 1
+            step_number += 1
             self.get_exp_derivative(self.theta)
             ri = self.get_residual(self.theta) #  get residual at thetha zero
             #print(self.theta)
@@ -73,25 +77,12 @@ class GNSolver:
                 #riJ = self.get_residual_der(self.theta)
             try:
                 th1 = np.linalg.solve(riJ.T @ riJ, -ri @ riJ)
-                #print(f"Round {k} --------------")
-                #print("coeffs", np.round(self.theta,6))
-                #print("Step",np.round(th1,6))
-                #print("---------------")
             except:
-                print(f"Round {k} --------------")
-                print(riJ.T @ riJ)
-                print(-ri @ riJ)
                 return
                 
             if not mode:
                 self.theta+=th1
             else:
-                #riJ = self.get_residual_der(self.theta)  # get derivative of first derivative residual 
-                """
-                num = np.einsum("i,ij", ri, riJ)  #  get "numertor"
-                inv = self.get_inverse(np.einsum("ik,ij", riJ, riJ))  #  get inverse of JT J
-                step = np.einsum("j,kj", -num, inv)  # calculate step delta theta K
-                """
                 if self.derivative2 is not None:
                     riJK = self.get_exp_derivative2(self.theta)
                 else:
@@ -105,90 +96,61 @@ class GNSolver:
                     print("RHS", -ri @ JiK)
                     return
                 self.theta+=th2
-            #print(self.theta)
-            """
-            Jhik = (0.5*np.einsum("ikl,l", riJK, step))+riJ  # calculate J hat iK
-            Jhkj = np.einsum("ik,ij", Jhik, Jhik)  # calculate Jhat T Jhat
-            Jhkj1 = self.get_inverse(Jhkj)  # get inverse of Jhat T Jhat
-            num1= np.einsum("i,ij", ri, Jhik)  # get "numertor"
-            step2 = np.einsum("j,jk", -num1, Jhkj1)  # calculate step delta theta L
 
-            var1 = np.einsum("i,i", step,num)
-            var2 = np.einsum("i,i", step2,num1)  
-            print("original", var1)
-            print("modified", var2)
-            print("ratio", var1/var2)
-            if np.abs((var1/var2)-1) <= 0.001:
-                self.theta = self.theta + step2
-                print("STEP 2 Taken")
-            else:
-                self.theta = self.theta + step
-                print("STEP 1 Taken")
-            
-            #print("Original direction", var1)
-            #print("Modified direction", var2)
-            #print("aditional factor original", var3)
-            #print("first factor", var5)
-            #print("Original step", a1[0])
-            #print("modified step", a2[0])
-            #print("Work vector", wv)
-            #print("________________________________")
-            #
-            
-            #Approach two
-            #Line search
-            #line search results
-            #alpha = 1 for stepsize
-            
-            a = line_search(self.get_rmse, self.get_rmse_der, np.array(self.theta), np.array(step2))
-            if a[0] == None:
-                print("step dir",np.einsum("i,i", step,np.einsum("i,ij",ri ,riJ)))
-                print("step dir2",np.einsum("i,i", step2,np.einsum("i,ij",ri ,Jhik)))
-                print(self.get_rmse(self.theta))
-                self.theta = self.theta + step2
-            else:
-                print(a)
-                step2 *= a[0]
-                self.theta = self.theta + step2
+            steps.append(self.theta.copy())
             
             
-            #Text out
-            #print("########################")
-            #print("Original",step)
-            #print("---------------")
-            #print("Corrected",step2)
-            #print("########################")
-
-            #stuff for plotting
-            stepps1.append(step)
-            stepps2.append(step2)
+            #Convergence
+            if len(steps) > 3:
+               lnf = np.linalg.norm(steps[-1]-self.original_root)
+               lns = np.linalg.norm(steps[-2]-self.original_root)
+               lds = np.linalg.norm(steps[-3]-self.original_root)
+               nl = np.log10(lnf/lns)
+               dl = np.log10(lns/lds)
+               q_rate.append(nl/dl)
+            if len(q_rate) > 0:
+               e1 = np.linalg.norm(steps[-1]-self.original_root)
+               e2 = np.linalg.norm(steps[-2]-self.original_root)
+               q1_rate.append(e1/(e2**q_rate[-1]))
             """
-            rmse = self.get_rmse(self.theta)
-            #print(rmse)
-            rmse_steps.append(rmse)
+            if len(mse_steps) > 3:
+               lnf = mse_steps[-1]
+               lns = mse_steps[-2]
+               lds = mse_steps[-3]
+               nl = np.log10(lnf/lns)
+               dl = np.log10(lns/lds)
+               q_rate.append(nl/dl)
+            if len(q_rate) > 0:
+               e1 = mse_steps[-1]
+               e2 = mse_steps[-2]
+               q1_rate.append(e1/(e2**q_rate[-1]))
+            """
+            mu_rate.append(np.linalg.norm(self.theta - self.original_root))
+
+
+            mse = self.get_mse(self.theta)
+            mse_steps.append(mse)
             if self.tolerance_difference is not None:
-                diff = np.abs(rmse_prev - rmse)
+                diff = np.abs(mse_prev - mse)
                 if diff < self.tolerance_difference:
-                    #print("HERE")
-                    return self.theta, steps, stepps1, stepps2, rmse_steps
-            if rmse < self.tolerance:
-                #print("HERE2")
-                return self.theta, steps, stepps1, stepps2, rmse_steps
-            rmse_prev = rmse
+                    return self.theta, step_number, steps, mse_steps, q_rate, q1_rate, mu_rate
+            if mse < self.tolerance:
+                return self.theta, step_number, steps, mse_steps, q_rate, q1_rate, mu_rate
+            mse_prev = mse
 
-        return self.theta, steps, stepps1, stepps2, rmse_steps
+        return self.theta, step_number, steps, mse_steps, q_rate, q1_rate, mu_rate
         
         
     def get_residual(self, t):
         return self.y-self.function(self.x, t).reshape(-1)
 
-    def get_rmse(self, t):
+    def get_mse(self, t):
         ri = self.get_residual(t)
-        return np.einsum("i,i",ri,ri)**0.5
+        return np.einsum("i,i",ri,ri)*0.5
     def get_rmse_der(self, t) -> np.ndarray:
         ri = self.get_residual(t)
         riJ = self.get_residual_der(t)
-        return np.einsum("i,ij",ri,riJ)/self.get_rmse(t)
+        return np.einsum("i,ij",ri,riJ)
     def get_estimate(self) -> np.ndarray:
         """
         Get estimated response vector based on fit.

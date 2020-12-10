@@ -7,20 +7,20 @@ FILE_PATH = 'results/Ans '
 if __name__ == '__main__':
     startTime = datetime.now()
     pool = mp.Pool(processes=8)
-    n = 512j
-    m = 512j
-    root = [0,0]
+    n = 100j
+    m = 100j
+    root = [0.5,1]
     #Range
-    start = -1
-    stop = 1
+    start = -50
+    stop = 50
     f_index = 5
     c1 = ["None"]
 
 
     ans = np.zeros((int(n.imag), int(m.imag), 3))
     ansSet = {}
-    x = np.mgrid[start+root[0]:stop+root[0]:n, start+root[1]:stop+root[1]:m].reshape(2, -1).T
-    x1 = np.random.rand(int(-(n*m).real), 2)
+    x = np.mgrid[start:stop:n, start:stop:m].reshape(2, -1).T
+    x1 = np.mgrid[start+root[0]:stop+root[0]:n, start+root[1]:stop+root[1]:m].reshape(2, -1).T
 
 
     for i, ii in enumerate(pool.imap(enm.solve, np.hstack((x, x1)))):

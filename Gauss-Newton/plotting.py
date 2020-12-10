@@ -1,33 +1,106 @@
 
 import numpy as np
 import matplotlib.pyplot as plt
-import matplotlib.tri as tri
+import matplotlib as mpl
 from scipy.interpolate import griddata
 from matplotlib.colors import Normalize
+from matplotlib.colors import ListedColormap, LinearSegmentedColormap
+from mpl_toolkits.axes_grid1 import ImageGrid
+from matplotlib import cm
 
-with open('Gauss-Newton/test4.npy', 'rb') as f:
-    Ans = np.load(f)
-
-xAxis = Ans[:, 1]
-xAxisLog = np.log10(Ans[:,1])
-yAxis = Ans[:, 0]
-alphas = Ans[:, 4]
-print(alphas)
-
-values = Ans[:, 3]
-print(values)
-points = (xAxisLog,yAxis)
-#values/=max(values)
-#values+=0.5
-alphas/=np.max(alphas)
-values/=np.max(values)
-alphas+=0.1
-grid_x, grid_y = np.mgrid[1:max(xAxisLog):200j, 0:max(yAxis):100j]
-
-grid_z1 = griddata(points, values, (grid_x, grid_y), method='cubic')
-grid_z2 = griddata(points, alphas, (grid_x, grid_y), method='cubic')
+with open('Gauss-Newton/f4gn.npy', 'rb') as f:
+    Ans = np.load(f) 
+with open('Gauss-Newton/f4cgn.npy', 'rb') as f:
+    Ans1 = np.load(f) #corrected
 
 
-plt.imshow(grid_z1.T,alpha=grid_z2.T, extent=(1,max(xAxisLog),0,max(yAxis)), origin='lower')
+
+#Ans[np.where(Ans[:,4,:]!=0)] +=[0,0,0,0,1]
+
+"""
+#Bar Chart Plotting
+print(Ans[:, 0])
+noise = 0
+workList = Ans[np.where(Ans[:, 0] == noise)]
+dist = workList[:,1]
+steps = workList[:,2]
+
+width = (dist[1]-dist[0])
+fig, ax = plt.subplots()
+ax.bar(dist, steps, width,edgecolor = 'k' ,linewidth=0.1)
+
+ax.set_ylabel('Steps')
+ax.set_xlabel(r'Distance 10^n')
+ax.set_xticks(dist)
+plt.show()
+"""
+
+
+#image showing all values
+
+
+
+viridis = cm.get_cmap('viridis_r', 100)
+newcolors = viridis(np.linspace(0, 1, 256))
+newcmp = ListedColormap(newcolors)
+stepLimit = 100
+vmax = np.max([Ans[:,2],Ans1[:,2]])
+cmap = newcmp#mpl.cm.get_cmap("YlOrBr")
+cmap.set_bad(color='white')
+fig = plt.figure()
+fig.tight_layout()
+
+font = {'family' : 'normal',
+        'weight' : 'normal',
+        'size'   : 20}
+
+mpl.rc('font', **font)
+grid = ImageGrid(fig, 111,
+                nrows_ncols = (1,2),
+                axes_pad = 1,
+                cbar_location = "right",
+                cbar_mode="single",
+                cbar_size="5%",
+                cbar_pad=0.05
+                )
+def pl(Ans):
+    noise = Ans[:, 0]
+    dist = Ans[:, 1]
+    steps = Ans[:, 2]
+    print(steps)
+    grid_x, grid_y = np.mgrid[0:np.max(noise):1000j, 0:np.max(dist):1000j]
+    points = (noise, dist)
+    grid_z0 = griddata(points, steps, (grid_x, grid_y), method='linear').T
+    masked_array = np.ma.masked_where(grid_z0 ==0, grid_z0)
+    return masked_array
+
+
+mk1 = pl(Ans)
+mk2 = pl(Ans1)
+noise = Ans[:, 0]
+dist = Ans[:, 1]
+print(vmax)
+#grid[0].imshow(mk1 ,extent=(0,np.max(dist),0,np.max(noise)), origin='lower', cmap=cmap,vmin = 1, vmax = vmax)
+img = grid[0].contourf(mk1,extent=(0,np.max(dist),0,np.max(noise)),cmap=cmap,vmin = 1, vmax = vmax)
+
+#img = grid[1].imshow(mk2 ,extent=(0,np.max(dist),0,np.max(noise)), origin='lower', cmap=cmap,vmin = 1, vmax = vmax)
+grid[1].contourf(mk2 ,extent=(0,np.max(dist),0,np.max(noise)), cmap=cmap,vmin = 1, vmax = vmax)
+
+cbar = fig.colorbar(img, cax=grid.cbar_axes[0])
+cbar.ax.set_ylabel("Number of steps",fontsize = 40)
+labels = [f'$10^{ {i} }$' for i in np.arange(0,np.max(dist)+1, step=1 )]
+grid[0].set_xticks(np.arange(0,np.max(dist)+1, step=1 ))
+grid[0].set_xticklabels(labels)
+grid[0].set_xlabel("Distance",fontsize = 40)
+grid[0].set_ylabel("Noise",fontsize = 40)
+grid[0].set_title('GN', fontsize = 40)
+
+
+grid[1].set_xticks(np.arange(0,np.max(dist)+1, step=1 ))
+grid[1].set_xticklabels(labels)
+grid[1].set_xlabel("Distance",fontsize = 40)
+grid[1].set_title('CGN', fontsize = 40)
 
 plt.show()
+
+

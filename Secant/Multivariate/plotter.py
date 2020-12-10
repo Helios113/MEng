@@ -5,12 +5,12 @@ import matplotlib.cm as cm
 from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
-c = [1,2]
-n = 200
-m = 200
-root = [0,0]
-start = -5
-stop = 5
+c = ["None"]
+n = 100
+m = 100
+root = [1,0]
+start = -50
+stop = 50
 f_index = 5
 
 colors = plt.get_cmap("tab20c")
@@ -87,4 +87,4 @@ for i in range(1, int(num)+1):
 
 plt.savefig(f'graphics/FS-{f_index} X ({start}, {stop}, {n}x{m})' +
             f' C ({c}).png', bbox_inches='tight', pad_inches=0.1)
-#plt.show()
+plt.show()
