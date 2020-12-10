@@ -99,3 +99,5 @@ def solve(x):
         return np.round(x, 3).tolist(), cnt, order, rate
     return None, cnt, order, rate
 
+
+
