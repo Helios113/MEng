@@ -83,7 +83,7 @@ def solve(x):
     for i in range(100):
         error.append(np.linalg.norm(x-ans))
         if len(error) > 2:
-            order.append(np.log10(error[-S1]/error[-2])/np.log10(error[-2]/error[-3]))
+            order.append(np.log10(error[-1]/error[-2])/np.log10(error[-2]/error[-3]))
         if len(order) > 0:
             rate.append(error[-1]/(error[-2]**order[-1]))
         cnt += 1
