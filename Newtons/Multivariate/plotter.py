@@ -12,7 +12,7 @@ m = 512
 root = [0, 0]
 start = -50
 stop = 50
-f_index = 5
+f_index = 4
 
 colors = plt.get_cmap("tab20c")
 outer_colors = colors(np.arange(5)*4)
@@ -33,7 +33,13 @@ FILE_PATH = (f'results/Ans FN-{f_index} X ({start}, {stop}, {n}x{m})' +
              f' C ({c[0]}).npy')
 with open(FILE_PATH, "r") as file:
     ans = np.load(FILE_PATH, allow_pickle=False)
-#  print(ans[:,:])
+
+#Flip colors
+ans[np.where(ans[:,:,0]==3)]+=[1,0,0]
+ans[np.where(ans[:,:,0]==2)]+=[1,0,0]
+ans[np.where(ans[:,:,0]==4)]-=[2,0,0]
+
+
 num = np.max(np.max(ans, axis=0)[:, 0])
 ans = np.apply_along_axis(Transform, -1, ans)
 
@@ -42,10 +48,10 @@ ans = np.apply_along_axis(Transform, -1, ans)
 rangeM = ans[np.where(ans[:,:,0] != 0)]
 #rangeM = rangeM[np.where(rangeM[0,:] != 1)]
 
-#maxx = np.max(rangeM[..., -1])
-#minn = np.min(rangeM[..., -1])
-maxx = 46
-minn = 2
+maxx = np.max(rangeM[..., -1])
+minn = np.min(rangeM[..., -1])
+#maxx = 22
+#minn = 3
 
 
 
@@ -57,12 +63,12 @@ ans[np.where(ans[:,:,0] == 0)] = [0,0,0,0.8]
 ratio = ans[np.where(ans[:,:,0] != 0)]
 ratio = ratio[np.where(ratio[:,0] != 1)]
 print(ratio.shape)
-print(ans.shape)
+
 print("Ratio:",ratio.shape[0]/512**2)
 #  Plotting
 
 
-with open('conditioned_arrays/FN5-none.npy', 'wb') as f:
+with open(f'conditioned_arrays/FN4-{c[0]}.npy', 'wb') as f:
     np.save(f, ans)
 
 
@@ -106,7 +112,7 @@ print("Maximum in range:", maxx)
 print("Minimum in range:", minn)
 
 plt.savefig(f'graphics/FN-{f_index} X ({start}, {stop}, {n}x{m})' +
-            f' C ({c[0]}).png', bbox_inches='tight', pad_inches=0.1)
+            f' C ({c[0]})1.png', bbox_inches='tight', pad_inches=0.1)
 plt.show()
 
 
