@@ -6,13 +6,13 @@ from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 
-c = [["None"]]
+c = [['None']]
 n = 512
 m = 512
 root = [0, 0]
-start = -2
-stop = 2
-f_index = 6
+start = -50
+stop = 50
+f_index = 5
 
 colors = plt.get_cmap("tab20c")
 outer_colors = colors(np.arange(5)*4)
@@ -42,8 +42,12 @@ ans = np.apply_along_axis(Transform, -1, ans)
 rangeM = ans[np.where(ans[:,:,0] != 0)]
 #rangeM = rangeM[np.where(rangeM[0,:] != 1)]
 
-maxx = np.max(rangeM[..., -1])
-minn = np.min(rangeM[..., -1])
+#maxx = np.max(rangeM[..., -1])
+#minn = np.min(rangeM[..., -1])
+maxx = 46
+minn = 2
+
+
 
 ans[..., -1] /= maxx
 ans[..., -1] += 0.5
@@ -57,16 +61,21 @@ print(ans.shape)
 print("Ratio:",ratio.shape[0]/512**2)
 #  Plotting
 
+
+with open('conditioned_arrays/FN5-none.npy', 'wb') as f:
+    np.save(f, ans)
+
+
 plt.rcParams['font.size'] = 12
 plt.rcParams['axes.linewidth'] = 2
 fig = plt.figure(figsize=(10, 10))
 ax = fig.add_subplot(1, 1, 1)
+
 imgplot = plt.imshow(ans, origin='lower', extent=[start+root[0], stop+root[0], start+root[1], stop+root[1]])
 ax.set_xlabel(r'$x_0$', labelpad=10)
 ax.set_ylabel(r'$x_1$', labelpad=10)
 
 artists = []
-print("Length:",num)
 for i in range(1, int(num)+1):
     change1 = outer_colors[i].copy()
     col1 = np.array([change1, ]*12)
@@ -91,6 +100,10 @@ for i in range(1, int(num)+1):
 
     cb.ax.set_xlabel(r'$r_{{{}}}$'.format(i))
     artists.append(cb)
+
+
+print("Maximum in range:", maxx)
+print("Minimum in range:", minn)
 
 plt.savefig(f'graphics/FN-{f_index} X ({start}, {stop}, {n}x{m})' +
             f' C ({c[0]}).png', bbox_inches='tight', pad_inches=0.1)

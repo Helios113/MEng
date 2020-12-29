@@ -2,10 +2,10 @@ import ENM_terminal as term
 import numpy as np
 n = 512j
 m = 512j
-root = [1.26, -0.794]
+root = [0.4, 0.4]
 start = -50
 stop = 50
-f_index = 4
+f_index = 3
 x = np.mgrid[start+root[0]:stop+root[0]:n, start+root[1]:stop+root[1]:m].reshape(2, -1).T
 
 
