@@ -53,9 +53,9 @@ class GNSolver:
 
         if self.init_guess is None:
             raise Exception("Initial guess needs to be provided")
-        
+
         self.theta = self.init_guess
-        
+
         mse_prev = np.inf
 
         step_number = 0
@@ -67,9 +67,9 @@ class GNSolver:
         for k in range(self.max_iter):
             step_number += 1
             self.get_exp_derivative(self.theta)
-            ri = self.get_residual(self.theta) #  get residual at thetha zero
-            #print(self.theta)
-            
+            ri = self.get_residual(self.theta)  # get residual at thetha zero
+            # print(self.theta)
+
             if self.derivative is not None:
                 riJ = self.get_exp_derivative(self.theta)
             else:
@@ -79,27 +79,28 @@ class GNSolver:
                 th1 = np.linalg.solve(riJ.T @ riJ, -ri @ riJ)
             except:
                 return
-                
+
             if not mode:
-                self.theta+=th1
+                self.theta += th1
             else:
                 if self.derivative2 is not None:
                     riJK = self.get_exp_derivative2(self.theta)
                 else:
-                    riJK = self.get_residual_der_der(self.theta)  # calcualte second derivative of residual
+                    # calcualte second derivative of residual
+                    riJK = self.get_residual_der_der(self.theta)
                 JiK = riJ + 0.5*(riJK @ th1)
                 try:
                     th2 = np.linalg.solve(JiK.T @ JiK, -ri @ JiK)
                 except:
-                    print("Thetha2:",self.theta)
-                    print("LHS",JiK.T @ JiK)
+                    print("Thetha2:", self.theta)
+                    print("LHS", JiK.T @ JiK)
                     print("RHS", -ri @ JiK)
                     return
-                self.theta+=th2
+                self.theta += th2
 
             steps.append(self.theta.copy())
-            
-            
+
+            """
             #Convergence
             if len(steps) > 3:
                lnf = np.linalg.norm(steps[-1]-self.original_root)
@@ -112,7 +113,7 @@ class GNSolver:
                e1 = np.linalg.norm(steps[-1]-self.original_root)
                e2 = np.linalg.norm(steps[-2]-self.original_root)
                q1_rate.append(e1/(e2**q_rate[-1]))
-            """
+            
             if len(mse_steps) > 3:
                lnf = mse_steps[-1]
                lns = mse_steps[-2]
@@ -124,9 +125,9 @@ class GNSolver:
                e1 = mse_steps[-1]
                e2 = mse_steps[-2]
                q1_rate.append(e1/(e2**q_rate[-1]))
-            """
+            
             mu_rate.append(np.linalg.norm(self.theta - self.original_root))
-
+            """
 
             mse = self.get_mse(self.theta)
             mse_steps.append(mse)
@@ -139,18 +140,19 @@ class GNSolver:
             mse_prev = mse
 
         return self.theta, step_number, steps, mse_steps, q_rate, q1_rate, mu_rate
-        
-        
+
     def get_residual(self, t):
         return self.y-self.function(self.x, t).reshape(-1)
 
     def get_mse(self, t):
         ri = self.get_residual(t)
-        return np.einsum("i,i",ri,ri)*0.5
+        return np.einsum("i,i", ri, ri)*0.5
+
     def get_rmse_der(self, t) -> np.ndarray:
         ri = self.get_residual(t)
         riJ = self.get_residual_der(t)
-        return np.einsum("i,ij",ri,riJ)
+        return np.einsum("i,ij", ri, riJ)
+
     def get_estimate(self) -> np.ndarray:
         """
         Get estimated response vector based on fit.
@@ -171,8 +173,10 @@ class GNSolver:
             t1[i] += step
             t2 = t.copy()
             t2[i] -= step
-            c = self.get_residual(t1).reshape(-1,1)  # residual with added step  
-            d = self.get_residual(t2).reshape(-1,1)   # residual without added step
+            # residual with added step
+            c = self.get_residual(t1).reshape(-1, 1)
+            # residual without added step
+            d = self.get_residual(t2).reshape(-1, 1)
             a = np.hstack((a, c)) if a is not None else c  # stacking
             b = np.hstack((b, d)) if b is not None else d  # stacking
         return (a-b)/(2*step)  # calculating the derivative
@@ -192,24 +196,25 @@ class GNSolver:
             t2[i] -= step
             c = self.get_residual_der(t1)
             d = self.get_residual_der(t2)
-            #print("Diff",c-d)
+            # print("Diff",c-d)
             a = np.dstack((a, c)) if a is not None else c
             b = np.dstack((b, d)) if b is not None else d
         return (a-b)/(2*step)
 
     def get_inverse(self, rJ):
         return pinv(rJ)
+
     def get_exp_derivative(self, t):
         b = None
         for i in self.x:
-            a =-self.derivative(i,self.theta)
+            a = -self.derivative(i, self.theta)
             b = np.vstack((b, a)) if b is not None else a
         return b
-    def get_exp_derivative2(self,t):
+
+    def get_exp_derivative2(self, t):
         b = None
         for i in self.x:
-            a =-self.derivative2(i,self.theta)
+            a = -self.derivative2(i, self.theta)
             b = np.vstack((b, a)) if b is not None else a
-        
+
         return b
-        

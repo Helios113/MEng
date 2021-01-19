@@ -1,4 +1,5 @@
 import numpy as np
+esp = 1e-5
 def func(x, coeff):
     
     #return coeff[0] * x ** 3 + coeff[1] * x ** 2 + coeff[2] * x + coeff[3] + coeff[4] * np.sin(x) #[-0.001, 0.1, 0.1, 2, 15]
@@ -13,7 +14,7 @@ def func(x, coeff):
     #return coeff[0]*np.exp(-x[:,0]/coeff[1])+coeff[2]*np.exp(-x[:,1]/coeff[3]) #[4,2,1,10]
 
     #return (coeff[0]*np.exp(complex(coeff[2],coeff[1])*x)+coeff[3]*np.exp(complex(coeff[5],coeff[4])*x)).real
-    
+
 
 
 def der_func(x, coeff):
@@ -36,6 +37,8 @@ def der_func(x, coeff):
     ]).real.reshape(1,-1)
     """
 
+    
+    
 
 def der2_func(x, coeff):
 

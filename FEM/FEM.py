@@ -2,20 +2,19 @@ import numpy as np
 import matplotlib.pyplot as plt
 import solver_ENM as solver
 import lhsmdu
-
+from mpl_toolkits.mplot3d import Axes3D 
 mat_model=None
-Fext = 0.0
+F_traction = 0.0#external force in Newtons
+F_body = 0.0
 Le = []
 L = 0.0
 nNodes = 0
 nElem = 0
 X = []
-factor = 0
 BClogic = []
 ################################ Material Models ##########################
 def lin(l):
-    A=1000
-    B=50
+    A=100
     P=A*(l-1)
     dPdl = A
     return P, dPdl
@@ -27,41 +26,39 @@ def exp_m(l):
     return P, dPdl
 
 def VM(l):
-    A=0.2
-    B=0.9
+    A=2.48446
+    B=0.16860
     expB = np.exp(B*(l*l+2./l-3))
     P=2*A*(l-1./l/l)*expB-A*(1-1./l**3)
     dPdl = 2*A*B*(l - 1.0/l**2)*(2*l - 2./l**2)*expB + 2*A*(1 + 2.0/l**3)*expB - 3.0*A/l**4
     return P, dPdl
 
 def MR(l):#compression is non linear
-    mu=2
-    nu=0.9
+    mu=5.289
+    nu=-0.6417
     P = mu*nu*(l-1./l/l)+mu*(1-nu)*(1-1./l/l/l)
     dPdl = mu*(nu*(1 + 2.0/l**3) + 3.0*(-nu + 1)/l**4)
     return P,dPdl
 ###########################################################################
 
-
-
-
 def main():
     global mat_model
-    global Fext
+    global F_traction
+    global F_body
     global Le
     global L
-    global factor
     global nNodes
     global nElem
     global X
     global BClogic
     mat_model=VM
-    L=2.0 #length of beam 
-    nNodes=6# number of nodes
-    Fext=5#external force in Newtons
+    L = 2.0 #length of beam 
+    nNodes = 6# number of nodes
+    F_traction= -10#external force in Newtons
+    F_body = -10
     #printout=True
 
-    factor = -1 #+1 for compression and -1 for extension
+    #factor = -1 #+1 for compression and -1 for extension
 
     nElem = nNodes-1 # number of elements
 
@@ -78,6 +75,7 @@ def main():
     eps = 1e-4
 
     F = np.logspace(-1,3,30) 
+    
     #F vs Fext
     """
     ans = None
@@ -110,7 +108,8 @@ def main():
         for i,_ in enumerate(x1[:-1]):
             l1.append((x1[i+1]-x1[i])/Le[0])
         #print(c)
-        #print(np.linalg.norm(x1-c))
+        #print(np.linalg.norm(x1-c))4
+        print("Stretch",repr(l1))
         avg = np.average(l1)
         maxx = np.max(l1)
         minn = np.min(l1)
@@ -119,7 +118,7 @@ def main():
         l1+=1
         l1*=avg
         l1 *=avg/np.average(l1)
-        print(l1)
+        print("Corrected Stretches",repr(l1.tolist()))
     else:
         print(c)
         #print(np.linalg.norm([0.,0.5978,1.1956,1.7934,2.3912]-c))
@@ -158,9 +157,9 @@ def _force_stiff(x1,x2,le,n):
 
 def force_stiff(x, n):
     #print("Call", x,n)
-    global Fext#
+    global F_traction
+    global F_body#
     global Le#
-    global factor#
     global nNodes#
     global nElem #
     global BClogic#
@@ -177,12 +176,14 @@ def force_stiff(x, n):
             #print("fglobal1", fglobal)
             Kglobal[e:e+2,e:e+2] += k #global stiffness matrix
             #print("K_global, ln:127",Kglobal)
-    fglobal[-1] += factor*Fext
+    
+    fglobal[-1] += F_traction
     
     #for force acting along the length
-    #for e in range(nElem):
-    #    le = X[e+1]-X[e]
-    #    fglobal[e:e+2] += factor*Fext*le
+    
+    for e in range(nElem):
+        le = X[e+1]-X[e]
+        fglobal[e:e+2] += F_body*le
     
     #remove the fixed boundary condition
 
@@ -199,19 +200,23 @@ def force_stiff(x, n):
 def test(x):
     #lhsmdu.sample(nNodes, 1)
     #c = np.array([k+(i/9)**2 for i,k in enumerate(x)])
-    a = np.array(lhsmdu.sample(nNodes, 1))
-    c = 2*x+(a.flatten()/10) #pick a c that dissatisfies the function alot
-                                        #definitly need a random pertubation 
-    
-    while not np.all(c[:-1] <= c[1:]) or not np.all(c >= 0):
-        a = np.array(lhsmdu.sample(nNodes, 1))
-        c = 2*x+(a.flatten()/10)
-    c[0] = 0
-    #c[-1] +=1 
-    print("Input c is:",c)
-    print("Input x is:",x)
-    s = solver.solve(force_stiff, c)
-    return (s.execute(x),c)
+    loc = []
+    loc1 = []
+    ans = []
+    a = np.random.rand(nNodes)
+    phi = 3
+    c = phi*x+(a.flatten()) #pick a c that dissatisfies the function alot
+                                                    #definitly need a random pertubation 
 
+    while not np.all(c[:-1] <= c[1:]) or not np.all(c >= 0):
+        a = np.random.rand(nNodes)
+        c = phi*x+(a.flatten())
+        
+    c[0] = 0
+    
+    s = solver.solve(force_stiff, c)
+    b = s.execute(x) 
+    print(b[1])
+    return (b[0], c)
 
 main()

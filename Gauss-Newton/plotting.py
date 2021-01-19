@@ -7,10 +7,11 @@ from matplotlib.colors import Normalize
 from matplotlib.colors import ListedColormap, LinearSegmentedColormap
 from mpl_toolkits.axes_grid1 import ImageGrid
 from matplotlib import cm
+import matplotlib.ticker as mtick
 
-with open('Gauss-Newton/f4gn.npy', 'rb') as f:
+with open('FEM_GN/f_MR2_gn.npy', 'rb') as f:
     Ans = np.load(f) 
-with open('Gauss-Newton/f4cgn.npy', 'rb') as f:
+with open('FEM_GN/f_MR2_cgn.npy', 'rb') as f:
     Ans1 = np.load(f) #corrected
 
 
@@ -38,8 +39,6 @@ plt.show()
 
 #image showing all values
 
-
-
 viridis = cm.get_cmap('viridis_r', 100)
 newcolors = viridis(np.linspace(0, 1, 256))
 newcmp = ListedColormap(newcolors)
@@ -47,12 +46,12 @@ stepLimit = 100
 vmax = np.max([Ans[:,2],Ans1[:,2]])
 cmap = newcmp#mpl.cm.get_cmap("YlOrBr")
 cmap.set_bad(color='white')
-fig = plt.figure()
-fig.tight_layout()
+fig = plt.figure(figsize=(17,6))
+
 
 font = {'family' : 'normal',
         'weight' : 'normal',
-        'size'   : 20}
+        'size'   : 15}
 
 mpl.rc('font', **font)
 grid = ImageGrid(fig, 111,
@@ -68,8 +67,8 @@ def pl(Ans):
     dist = Ans[:, 1]
     steps = Ans[:, 2]
     print(steps)
-    grid_x, grid_y = np.mgrid[0:np.max(noise):1000j, 0:np.max(dist):1000j]
-    points = (noise, dist)
+    grid_x, grid_y = np.mgrid[0:np.max(dist):1000j, 0:np.max(noise):1000j]
+    points = (dist, noise)
     grid_z0 = griddata(points, steps, (grid_x, grid_y), method='linear').T
     masked_array = np.ma.masked_where(grid_z0 ==0, grid_z0)
     return masked_array
@@ -79,28 +78,48 @@ mk1 = pl(Ans)
 mk2 = pl(Ans1)
 noise = Ans[:, 0]
 dist = Ans[:, 1]
+snr =np.flip(np.unique(np.round(Ans[:, 3],6)))
 print(vmax)
 #grid[0].imshow(mk1 ,extent=(0,np.max(dist),0,np.max(noise)), origin='lower', cmap=cmap,vmin = 1, vmax = vmax)
 img = grid[0].contourf(mk1,extent=(0,np.max(dist),0,np.max(noise)),cmap=cmap,vmin = 1, vmax = vmax)
-
-#img = grid[1].imshow(mk2 ,extent=(0,np.max(dist),0,np.max(noise)), origin='lower', cmap=cmap,vmin = 1, vmax = vmax)
-grid[1].contourf(mk2 ,extent=(0,np.max(dist),0,np.max(noise)), cmap=cmap,vmin = 1, vmax = vmax)
+#img = grid[1].imshow(mk2 ,extent=(0,np.max(dist),0,np.max(noise)), cmap=cmap,vmin = 1, vmax = vmax)
+img =  grid[1].contourf(mk2 ,extent=(0,np.max(dist),0,np.max(noise)), cmap=cmap,vmin = 1, vmax = vmax)
 
 cbar = fig.colorbar(img, cax=grid.cbar_axes[0])
-cbar.ax.set_ylabel("Number of steps",fontsize = 40)
-labels = [f'$10^{ {i} }$' for i in np.arange(0,np.max(dist)+1, step=1 )]
+cbar.ax.set_ylabel("Number of steps",fontsize = 30)
+
+labelsx = [f'$10^{ {int(i)} }$' for i in np.arange(0,np.max(dist)+1, step=1 )]
 grid[0].set_xticks(np.arange(0,np.max(dist)+1, step=1 ))
-grid[0].set_xticklabels(labels)
-grid[0].set_xlabel("Distance",fontsize = 40)
-grid[0].set_ylabel("Noise",fontsize = 40)
+grid[0].set_xticklabels(labelsx)
+grid[0].set_xlabel("Distance",fontsize = 30)
+grid[0].set_ylabel("SNR [dB]",fontsize = 30)
+"""
+labelsy = [f'{"%.2E" % i}dB' for i in snr]
+ll = []
+for i in labelsy:
+    print(i)
+    if i[0] == '-':
+        a = float(i[0:5])
+        b = int(i[6:9])
+    else:
+        a = float(i[0:4])
+        b = int(i[5:8])
+    if a == 0:
+        ll.append(r'$ {a}E^{{{c}}}$'.format(a=a,c=b))
+    else:
+        ll.append(r'$ {a}E^{{{c}}}$'.format(a=a,c=b))
+"""
+ll = [f'{np.round(i,3)}' for i in snr]
+grid[0].set_yticklabels(ll)
+
 grid[0].set_title('GN', fontsize = 40)
 
 
 grid[1].set_xticks(np.arange(0,np.max(dist)+1, step=1 ))
-grid[1].set_xticklabels(labels)
-grid[1].set_xlabel("Distance",fontsize = 40)
+grid[1].set_xticklabels(labelsx)
+grid[1].set_xlabel("Distance",fontsize = 30)
 grid[1].set_title('CGN', fontsize = 40)
-
+fig.tight_layout()
 plt.show()
 
 

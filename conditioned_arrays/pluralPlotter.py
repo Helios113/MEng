@@ -15,16 +15,16 @@ outer_colors = np.vstack(([0, 0, 0, 0], outer_colors))
 
 
 ans = []
-FILE_PATH = "conditioned_arrays/FN4-['None'].npy"
+FILE_PATH = "conditioned_arrays/FN1-['None'].npy"
 with open(FILE_PATH, "r") as file:
     ans.append(np.load(FILE_PATH, allow_pickle=False))
-FILE_PATH = "conditioned_arrays/FN4-0.5x.npy"
+FILE_PATH = "conditioned_arrays/FN1-0.5x.npy"
 with open(FILE_PATH, "r") as file:
     ans.append(np.load(FILE_PATH, allow_pickle=False))
-FILE_PATH = "conditioned_arrays/FN4-['2x,3x'].npy"
+FILE_PATH = "conditioned_arrays/FN1-['2x,3x'].npy"
 with open(FILE_PATH, "r") as file:
     ans.append(np.load(FILE_PATH, allow_pickle=False))
-FILE_PATH = "conditioned_arrays/FN4-+1e-5.npy"
+FILE_PATH = "conditioned_arrays/FN1-['1'].npy"
 with open(FILE_PATH, "r") as file:
     ans.append(np.load(FILE_PATH, allow_pickle=False))
 
@@ -52,8 +52,8 @@ grid[2].set_title(r'$C$')
 grid[3].set_title(r'$D$')
 
 num = 1
-maxx = 100
-minn = 3
+maxx = 49.0
+minn = 2
 bbox_ax = grid[0].get_position()
 print(bbox_ax)
 bbox_ax1 = grid[1].get_position()

@@ -2,22 +2,43 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 import numpy as np
 
-def f(x):
-    return 33*x-216
+L = 2 #m
+P = 10000 #N
+E = 200*(10**9)
+I0 = 2339.921 * (100**-4)
+def func(x , I):
+    global L
+    global P
+    global E
+    return 1000*P*(x**2)*(3*L-x)/(6*E*I)
 
 
-x = [14.2, 16.4,11.9,15.2,18.5]
-y = [215, 325, 185, 332, 406]
-x1 = [12 , 20]
-y1 = [f(12),f(20)]
+y = np.array([0.,0.49,1.781,3.606,5.698])
+x = np.array([0.,0.5,1.,1.5,2])
+y1 = func(x,I0)
 
 fig, ax = plt.subplots()
-plt.plot([15.2, 15.2], [332, f(15.2)], '--', c = 'r')
 plt.scatter(x,y, c = 'orange')
-plt.plot(x1,y1, c = 'k')
+plt.plot(x,y1, c = 'k')
 
-a = 3/8
-b = 125/280
+ax.spines['left'].set_position('zero')
+ax.spines['bottom'].set_position('zero')
+
+# Eliminate upper and right axes
+ax.spines['right'].set_color('none')
+ax.spines['top'].set_color('none')
+
+# Show ticks in the left and lower axes only
+ax.xaxis.set_ticks_position('bottom')
+ax.yaxis.set_ticks_position('left')
+plt.gca().invert_yaxis()
+yticks = ax.yaxis.get_major_ticks() 
+yticks[1].label1.set_visible(False)
+xticks = ax.xaxis.get_major_ticks() 
+xticks[1].label1.set_visible(False)
+ax.set_xlabel("Length [m]")
+ax.xaxis.set_label_position('top') 
+ax.set_ylabel("Deflection [mm]")
 """plt.annotate(r"$\{$",fontsize=50,
             xy=(a, b), xycoords='figure fraction'
             )"""
@@ -26,5 +47,5 @@ b = 125/280
             )"""
 
 
-plt.savefig('cubic.png', transparent=True)
+#plt.savefig('cubic.png', transparent=True)
 plt.show()

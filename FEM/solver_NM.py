@@ -10,12 +10,18 @@ class solve:
 
     def execute(self, x ):
         global delta
-        for i in range(300):
+        for i in range(100):
             f,j = self.force_stiffness(x,2)
             b = np.linalg.inv(j).dot(f)
             x = x - np.insert(b,0,0)
-            if np.linalg.norm(b) < delta:
-                if check_root(x):
-                    return x
-            #print("Disp", x)
+            print("Step",b)
+            print("|Step|", np.linalg.norm(b))
+            print("X",x)
+            print("F", f)
+            print("|F|",np.linalg.norm(f))
+            input()
+            if np.linalg.norm(f) < 0.005:
+                print("Result", i)
+                return x
+            
         return None

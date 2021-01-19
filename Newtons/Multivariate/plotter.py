@@ -6,13 +6,13 @@ from matplotlib.colors import ListedColormap
 from mpl_toolkits.axes_grid1.inset_locator import inset_axes
 
 
-c = [['None']]
+c = [["^2"]]
 n = 512
 m = 512
 root = [0, 0]
 start = -50
 stop = 50
-f_index = 4
+f_index = 1
 
 colors = plt.get_cmap("tab20c")
 outer_colors = colors(np.arange(5)*4)
@@ -50,8 +50,8 @@ rangeM = ans[np.where(ans[:,:,0] != 0)]
 
 maxx = np.max(rangeM[..., -1])
 minn = np.min(rangeM[..., -1])
-#maxx = 22
-#minn = 3
+#maxx = 49
+#minn = 2
 
 
 
@@ -68,7 +68,7 @@ print("Ratio:",ratio.shape[0]/512**2)
 #  Plotting
 
 
-with open(f'conditioned_arrays/FN4-{c[0]}.npy', 'wb') as f:
+with open(f'conditioned_arrays/FN{f_index}-{c[0]}.npy', 'wb') as f:
     np.save(f, ans)
 
 

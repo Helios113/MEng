@@ -54,7 +54,7 @@ class solve:
     def execute(self, x ):
         global delta
         #np.set_printoptions(precision=4)
-        for i in range(60):
+        for i in range(100):
             q,inf1, inf2 = self.P(x)
             #print("Q", q)
             q = q.reshape(-1, 1)
@@ -76,11 +76,11 @@ class solve:
             input()
             
             if fvec < 0.005:
-                print("Halla")
-                return x
+                print("Result", i)
+                return x, i
             
             #print("Disp", x)
         #print(x)
-        return None
+        return None , 0
 
         
